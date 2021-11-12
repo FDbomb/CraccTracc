@@ -1,0 +1,537 @@
+<?xml version="1.0"?>
+<gpx version="1.1" creator="OpenCPN" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.topografix.com/GPX/1/1" xmlns:gpxx="http://www.garmin.com/xmlschemas/GpxExtensions/v3" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" xmlns:opencpn="http://www.opencpn.org">
+  <wpt lat="30.218310000" lon="-89.866016667">
+    <time>2016-08-08T08:17:19Z</time>
+    <name>Bayou Bonfouca</name>
+    <sym>diamond</sym>
+    <type>WPT</type>
+    <extensions>
+      <opencpn:guid>2424cb0c-ecc5-440f-b243-a3717ca1faea</opencpn:guid>
+      <opencpn:viz_name>1</opencpn:viz_name>
+      <opencpn:shared>1</opencpn:shared>
+      <opencpn:arrival_radius>0.050</opencpn:arrival_radius>
+      <opencpn:waypoint_range_rings visible="false" number="0" step="1" units="0" colour="#FF0000" />
+      <opencpn:scale_min_max UseScale="false" ScaleMin="2147483646" ScaleMax="0" />
+    </extensions>
+  </wpt>
+  <wpt lat="30.127250000" lon="-90.118450000">
+    <time>2020-10-23T22:46:59Z</time>
+    <name>Cause South Hump</name>
+    <sym>1st-Diamond</sym>
+    <type>WPT</type>
+    <extensions>
+      <opencpn:guid>40ffe396-5c4f-4828-b4e1-c956355c5af6</opencpn:guid>
+      <opencpn:viz_name>1</opencpn:viz_name>
+      <opencpn:arrival_radius>0.050</opencpn:arrival_radius>
+      <opencpn:waypoint_range_rings visible="false" number="0" step="1" units="0" colour="#FF0000" />
+      <opencpn:scale_min_max UseScale="false" ScaleMin="2147483646" ScaleMax="0" />
+    </extensions>
+  </wpt>
+  <wpt lat="30.250313333" lon="-90.113293333">
+    <time>2018-06-28T09:43:24Z</time>
+    <name>Causway Bridge</name>
+    <sym>circle</sym>
+    <type>WPT</type>
+    <extensions>
+      <opencpn:guid>6e70867f-65f8-4c74-87d8-c74c4411fdff</opencpn:guid>
+      <opencpn:viz_name>1</opencpn:viz_name>
+      <opencpn:arrival_radius>0.050</opencpn:arrival_radius>
+      <opencpn:waypoint_range_rings visible="false" number="0" step="1" units="0" colour="#FF0000" />
+      <opencpn:scale_min_max UseScale="false" ScaleMin="2147483646" ScaleMax="0" />
+    </extensions>
+  </wpt>
+  <wpt lat="30.241783333" lon="-89.991766667">
+    <time>2016-08-08T08:08:51Z</time>
+    <name>Goose Point Piling</name>
+    <desc>You must sail south of this during the around the lake race</desc>
+    <sym>diamond</sym>
+    <type>WPT</type>
+    <extensions>
+      <opencpn:guid>31edfafb-c18a-48de-bc91-7d46328e0e1e</opencpn:guid>
+      <opencpn:viz_name>1</opencpn:viz_name>
+      <opencpn:shared>1</opencpn:shared>
+      <opencpn:arrival_radius>0.050</opencpn:arrival_radius>
+      <opencpn:waypoint_range_rings visible="false" number="0" step="0.100000001" units="0" colour="#FF0000" />
+      <opencpn:scale_min_max UseScale="false" ScaleMin="2147483646" ScaleMax="0" />
+    </extensions>
+  </wpt>
+  <wpt lat="30.319316667" lon="-90.086200000">
+    <time>2016-08-08T08:34:52Z</time>
+    <name>L1</name>
+    <sym>diamond</sym>
+    <type>WPT</type>
+    <extensions>
+      <opencpn:guid>6248d7c0-c13f-4e4a-8785-f41359013234</opencpn:guid>
+      <opencpn:viz_name>1</opencpn:viz_name>
+      <opencpn:arrival_radius>0.050</opencpn:arrival_radius>
+      <opencpn:waypoint_range_rings visible="false" number="0" step="1" units="0" colour="#FF0000" />
+      <opencpn:scale_min_max UseScale="false" ScaleMin="2147483646" ScaleMax="0" />
+    </extensions>
+  </wpt>
+  <wpt lat="30.335066667" lon="-90.066733333">
+    <time>2016-08-08T08:00:25Z</time>
+    <name>M1</name>
+    <sym>diamond</sym>
+    <type>WPT</type>
+    <extensions>
+      <opencpn:guid>69e36c76-9aa7-43e4-ac27-77fa26e489cc</opencpn:guid>
+      <opencpn:viz_name>1</opencpn:viz_name>
+      <opencpn:arrival_radius>0.050</opencpn:arrival_radius>
+      <opencpn:waypoint_range_rings visible="false" number="0" step="1" units="0" colour="#FF0000" />
+      <opencpn:scale_min_max UseScale="false" ScaleMin="2147483646" ScaleMax="0" />
+    </extensions>
+  </wpt>
+  <wpt lat="30.367543333" lon="-90.172786667">
+    <time>2018-06-28T09:45:07Z</time>
+    <name>Madisonville</name>
+    <sym>xmblue</sym>
+    <type>WPT</type>
+    <extensions>
+      <opencpn:guid>11e28869-6a31-49b9-85d3-82e739f7aec3</opencpn:guid>
+      <opencpn:viz_name>1</opencpn:viz_name>
+      <opencpn:arrival_radius>0.050</opencpn:arrival_radius>
+      <opencpn:waypoint_range_rings visible="false" number="0" step="1" units="0" colour="#FF0000" />
+      <opencpn:scale_min_max UseScale="false" ScaleMin="2147483646" ScaleMax="0" />
+    </extensions>
+  </wpt>
+  <wpt lat="30.347191667" lon="-90.062820000">
+    <time>2018-06-28T09:42:33Z</time>
+    <name>Mandeville</name>
+    <desc>Mandeville, La channel interance</desc>
+    <sym>1st-Anchorage</sym>
+    <type>WPT</type>
+    <extensions>
+      <opencpn:guid>5129bd2e-6960-492d-ad7e-cf9c1167b2f1</opencpn:guid>
+      <opencpn:viz_name>1</opencpn:viz_name>
+      <opencpn:arrival_radius>0.050</opencpn:arrival_radius>
+      <opencpn:waypoint_range_rings visible="false" number="0" step="1" units="0" colour="#FF0000" />
+      <opencpn:scale_min_max UseScale="false" ScaleMin="2147483646" ScaleMax="0" />
+    </extensions>
+  </wpt>
+  <wpt lat="30.028495000" lon="-90.111923333">
+    <time>2018-06-28T09:44:26Z</time>
+    <name>New Orleans</name>
+    <desc>New Orleans Marina entrance</desc>
+    <sym>triangle</sym>
+    <type>WPT</type>
+    <extensions>
+      <opencpn:guid>5db8d971-e38d-4491-ac19-7ad42ad3c7db</opencpn:guid>
+      <opencpn:viz_name>1</opencpn:viz_name>
+      <opencpn:arrival_radius>0.050</opencpn:arrival_radius>
+      <opencpn:waypoint_range_rings visible="false" number="0" step="1" units="0" colour="#FF0000" />
+      <opencpn:scale_min_max UseScale="false" ScaleMin="2147483646" ScaleMax="0" />
+    </extensions>
+  </wpt>
+  <wpt lat="30.253333333" lon="-90.095000000">
+    <time>2018-09-15T09:13:39Z</time>
+    <name>North Draw #2</name>
+    <sym>light</sym>
+    <type>WPT</type>
+    <extensions>
+      <opencpn:guid>0a79a12c-7142-42a8-bb50-78a06021cf22</opencpn:guid>
+      <opencpn:viz_name>1</opencpn:viz_name>
+      <opencpn:arrival_radius>0.050</opencpn:arrival_radius>
+      <opencpn:waypoint_range_rings visible="false" number="0" step="1" units="0" colour="#FF0000" />
+      <opencpn:scale_min_max UseScale="false" ScaleMin="2147483646" ScaleMax="0" />
+    </extensions>
+  </wpt>
+  <wpt lat="30.307200000" lon="-90.042766667">
+    <time>2016-08-08T08:33:14Z</time>
+    <name>PYC J</name>
+    <sym>diamond</sym>
+    <type>WPT</type>
+    <extensions>
+      <opencpn:guid>0d520008-552b-485e-adc9-86fb40c5b4bb</opencpn:guid>
+      <opencpn:viz_name>1</opencpn:viz_name>
+      <opencpn:arrival_radius>0.050</opencpn:arrival_radius>
+      <opencpn:waypoint_range_rings visible="false" number="0" step="1" units="0" colour="#FF0000" />
+      <opencpn:scale_min_max UseScale="false" ScaleMin="2147483646" ScaleMax="0" />
+    </extensions>
+  </wpt>
+  <wpt lat="30.303383333" lon="-90.061866667">
+    <time>2016-08-08T08:34:07Z</time>
+    <name>PYC P</name>
+    <sym>diamond</sym>
+    <type>WPT</type>
+    <extensions>
+      <opencpn:guid>6b938c01-d7b7-4eeb-bc13-0d79454207aa</opencpn:guid>
+      <opencpn:viz_name>1</opencpn:viz_name>
+      <opencpn:arrival_radius>0.050</opencpn:arrival_radius>
+      <opencpn:waypoint_range_rings visible="false" number="0" step="1" units="0" colour="#FF0000" />
+      <opencpn:scale_min_max UseScale="false" ScaleMin="2147483646" ScaleMax="0" />
+    </extensions>
+  </wpt>
+  <wpt lat="30.251716667" lon="-90.048333333">
+    <time>2020-08-14T10:09:00Z</time>
+    <name>PYC S</name>
+    <desc>PYC Mark S, floating yellow crayon black letters</desc>
+    <sym>Symbol-Diamond-Orange</sym>
+    <type>WPT</type>
+    <extensions>
+      <opencpn:guid>16f00000-1888-4f58-9517-dd852bcb0000</opencpn:guid>
+      <opencpn:viz_name>1</opencpn:viz_name>
+      <opencpn:shared>1</opencpn:shared>
+      <opencpn:arrival_radius>0.050</opencpn:arrival_radius>
+      <opencpn:waypoint_range_rings visible="false" number="0" step="1" units="0" colour="#FF0000" />
+      <opencpn:scale_min_max UseScale="false" ScaleMin="2147483646" ScaleMax="0" />
+    </extensions>
+  </wpt>
+  <wpt lat="30.336452000" lon="-90.067708000">
+    <time>2018-06-30T16:57:18Z</time>
+    <name>SL1_2018-06-30 101554</name>
+    <sym>Dot, White</sym>
+    <type>WPT</type>
+    <extensions>
+      <opencpn:guid>69154d95-9bf8-498a-9991-b0fc15dbad3f</opencpn:guid>
+      <opencpn:viz_name>1</opencpn:viz_name>
+      <opencpn:arrival_radius>0.050</opencpn:arrival_radius>
+      <opencpn:waypoint_range_rings visible="false" number="0" step="-1" units="-1" colour="#FFFFFF" />
+      <opencpn:scale_min_max UseScale="false" ScaleMin="2147483646" ScaleMax="0" />
+    </extensions>
+  </wpt>
+  <wpt lat="30.336401034" lon="-90.076088989">
+    <time>2018-07-15T03:11:31Z</time>
+    <name>SL2_2018-06-30 101554</name>
+    <sym>Dot, White</sym>
+    <type>WPT</type>
+    <extensions>
+      <opencpn:guid>3855aa5b-f3d0-4357-be70-200c04439a1c</opencpn:guid>
+      <opencpn:viz_name>1</opencpn:viz_name>
+      <opencpn:arrival_radius>0.050</opencpn:arrival_radius>
+      <opencpn:waypoint_range_rings visible="false" number="0" step="-1" units="-1" colour="#FFFFFF" />
+      <opencpn:scale_min_max UseScale="false" ScaleMin="2147483646" ScaleMax="0" />
+    </extensions>
+  </wpt>
+  <wpt lat="30.046411667" lon="-90.014715000">
+    <time>2020-10-23T22:55:32Z</time>
+    <name>SSH</name>
+    <sym>1st-Diamond</sym>
+    <type>WPT</type>
+    <extensions>
+      <opencpn:guid>32858296-edb0-488f-9743-e4910d67f835</opencpn:guid>
+      <opencpn:viz_name>1</opencpn:viz_name>
+      <opencpn:arrival_radius>0.050</opencpn:arrival_radius>
+      <opencpn:waypoint_range_rings visible="false" number="0" step="1" units="0" colour="#FF0000" />
+      <opencpn:scale_min_max UseScale="false" ScaleMin="2147483646" ScaleMax="0" />
+    </extensions>
+  </wpt>
+  <wpt lat="30.033333333" lon="-90.103333333">
+    <time>2016-08-26T20:12:41Z</time>
+    <name>SYC "A"</name>
+    <sym>diamond</sym>
+    <type>WPT</type>
+    <extensions>
+      <opencpn:guid>7b1139ae-3be8-433e-8080-900801f0932e</opencpn:guid>
+      <opencpn:viz_name>1</opencpn:viz_name>
+      <opencpn:shared>1</opencpn:shared>
+      <opencpn:arrival_radius>0.050</opencpn:arrival_radius>
+      <opencpn:waypoint_range_rings visible="false" number="0" step="1" units="0" colour="#FF0000" />
+      <opencpn:scale_min_max UseScale="false" ScaleMin="2147483646" ScaleMax="0" />
+    </extensions>
+  </wpt>
+  <wpt lat="30.033321667" lon="-90.103360000">
+    <time>2020-10-23T22:49:09Z</time>
+    <name>SYC "A"</name>
+    <sym>1st-Diamond</sym>
+    <type>WPT</type>
+    <extensions>
+      <opencpn:guid>5e0981a2-6b25-41fa-aa6b-7dd2621c392a</opencpn:guid>
+      <opencpn:viz_name>1</opencpn:viz_name>
+      <opencpn:arrival_radius>0.050</opencpn:arrival_radius>
+      <opencpn:waypoint_range_rings visible="false" number="0" step="1" units="0" colour="#FF0000" />
+      <opencpn:scale_min_max UseScale="false" ScaleMin="2147483646" ScaleMax="0" />
+    </extensions>
+  </wpt>
+  <wpt lat="30.036266667" lon="-90.111500000">
+    <time>2016-08-26T20:15:39Z</time>
+    <name>SYC "B"</name>
+    <sym>diamond</sym>
+    <type>WPT</type>
+    <extensions>
+      <opencpn:guid>691455c3-0d4f-4b0e-a332-ad717aef2f59</opencpn:guid>
+      <opencpn:viz_name>1</opencpn:viz_name>
+      <opencpn:arrival_radius>0.050</opencpn:arrival_radius>
+      <opencpn:waypoint_range_rings visible="false" number="0" step="1" units="0" colour="#FF0000" />
+      <opencpn:scale_min_max UseScale="false" ScaleMin="2147483646" ScaleMax="0" />
+    </extensions>
+  </wpt>
+  <wpt lat="30.043333333" lon="-90.114883333">
+    <time>2016-08-26T20:16:22Z</time>
+    <name>SYC "C"</name>
+    <sym>diamond</sym>
+    <type>WPT</type>
+    <extensions>
+      <opencpn:guid>377c751d-e5ff-4353-b2ef-deae33ac9bd0</opencpn:guid>
+      <opencpn:viz_name>1</opencpn:viz_name>
+      <opencpn:arrival_radius>0.050</opencpn:arrival_radius>
+      <opencpn:waypoint_range_rings visible="false" number="0" step="1" units="0" colour="#FF0000" />
+      <opencpn:scale_min_max UseScale="false" ScaleMin="2147483646" ScaleMax="0" />
+    </extensions>
+  </wpt>
+  <wpt lat="30.050429942" lon="-90.111501453">
+    <time>2016-08-26T20:17:21Z</time>
+    <name>SYC "D"</name>
+    <sym>diamond</sym>
+    <type>WPT</type>
+    <extensions>
+      <opencpn:guid>50752fe4-b833-4292-8e2b-8ee100f7861b</opencpn:guid>
+      <opencpn:viz_name>1</opencpn:viz_name>
+      <opencpn:arrival_radius>0.050</opencpn:arrival_radius>
+      <opencpn:waypoint_range_rings visible="false" number="0" step="1" units="0" colour="#FF0000" />
+      <opencpn:scale_min_max UseScale="false" ScaleMin="2147483646" ScaleMax="0" />
+    </extensions>
+  </wpt>
+  <wpt lat="30.053333333" lon="-90.103333333">
+    <time>2016-08-26T20:17:59Z</time>
+    <name>SYC "E"</name>
+    <sym>diamond</sym>
+    <type>WPT</type>
+    <extensions>
+      <opencpn:guid>3ea1a24b-d756-44a0-a707-e95b4445305b</opencpn:guid>
+      <opencpn:viz_name>1</opencpn:viz_name>
+      <opencpn:shared>1</opencpn:shared>
+      <opencpn:arrival_radius>0.050</opencpn:arrival_radius>
+      <opencpn:waypoint_range_rings visible="false" number="0" step="1" units="0" colour="#FF0000" />
+      <opencpn:scale_min_max UseScale="false" ScaleMin="2147483646" ScaleMax="0" />
+    </extensions>
+  </wpt>
+  <wpt lat="30.050400000" lon="-90.095166667">
+    <time>2016-08-26T20:20:03Z</time>
+    <name>SYC "F"</name>
+    <sym>diamond</sym>
+    <type>WPT</type>
+    <extensions>
+      <opencpn:guid>0ab15635-c1f3-4753-a7ce-5260056c9a02</opencpn:guid>
+      <opencpn:viz_name>1</opencpn:viz_name>
+      <opencpn:shared>1</opencpn:shared>
+      <opencpn:arrival_radius>0.050</opencpn:arrival_radius>
+      <opencpn:waypoint_range_rings visible="false" number="0" step="1" units="0" colour="#FF0000" />
+      <opencpn:scale_min_max UseScale="false" ScaleMin="2147483646" ScaleMax="0" />
+    </extensions>
+  </wpt>
+  <wpt lat="30.043333333" lon="-90.091783333">
+    <time>2016-08-26T20:20:40Z</time>
+    <name>SYC "G"</name>
+    <sym>diamond</sym>
+    <type>WPT</type>
+    <extensions>
+      <opencpn:guid>00ce60b4-ffd2-40b8-b0e5-f40a71711b3a</opencpn:guid>
+      <opencpn:viz_name>1</opencpn:viz_name>
+      <opencpn:arrival_radius>0.050</opencpn:arrival_radius>
+      <opencpn:waypoint_range_rings visible="false" number="0" step="1" units="0" colour="#FF0000" />
+      <opencpn:scale_min_max UseScale="false" ScaleMin="2147483646" ScaleMax="0" />
+    </extensions>
+  </wpt>
+  <wpt lat="30.036266667" lon="-90.095166667">
+    <time>2016-08-26T20:21:20Z</time>
+    <name>SYC "H"</name>
+    <sym>diamond</sym>
+    <type>WPT</type>
+    <extensions>
+      <opencpn:guid>6aaf4bd4-d2b9-4a3b-b68a-cccd028059ca</opencpn:guid>
+      <opencpn:viz_name>1</opencpn:viz_name>
+      <opencpn:arrival_radius>0.050</opencpn:arrival_radius>
+      <opencpn:waypoint_range_rings visible="false" number="0" step="1" units="0" colour="#FF0000" />
+      <opencpn:scale_min_max UseScale="false" ScaleMin="2147483646" ScaleMax="0" />
+    </extensions>
+  </wpt>
+  <wpt lat="30.041703333" lon="-90.051785000">
+    <time>2020-10-23T22:53:36Z</time>
+    <name>SYC "J"</name>
+    <sym>1st-Diamond</sym>
+    <type>WPT</type>
+    <extensions>
+      <opencpn:guid>4a17f569-79f0-4dff-ac10-47ff7100e4b9</opencpn:guid>
+      <opencpn:viz_name>1</opencpn:viz_name>
+      <opencpn:arrival_radius>0.050</opencpn:arrival_radius>
+      <opencpn:waypoint_range_rings visible="false" number="0" step="1" units="0" colour="#FF0000" />
+      <opencpn:scale_min_max UseScale="false" ScaleMin="2147483646" ScaleMax="0" />
+    </extensions>
+  </wpt>
+  <wpt lat="30.074699189" lon="-90.085710366">
+    <time>2016-08-26T20:22:57Z</time>
+    <name>SYC "Lamda"</name>
+    <sym>diamond</sym>
+    <type>WPT</type>
+    <extensions>
+      <opencpn:guid>1ccb5df7-94eb-42f0-8f57-0a441b426026</opencpn:guid>
+      <opencpn:viz_name>1</opencpn:viz_name>
+      <opencpn:arrival_radius>0.050</opencpn:arrival_radius>
+      <opencpn:waypoint_range_rings visible="false" number="0" step="1" units="0" colour="#FF0000" />
+      <opencpn:scale_min_max UseScale="false" ScaleMin="2147483646" ScaleMax="0" />
+    </extensions>
+  </wpt>
+  <wpt lat="30.108018333" lon="-90.117091667">
+    <time>2016-08-26T20:24:59Z</time>
+    <name>SYC "M"</name>
+    <sym>diamond</sym>
+    <type>WPT</type>
+    <extensions>
+      <opencpn:guid>1311697a-5ca5-415e-a85c-42154c2a9fff</opencpn:guid>
+      <opencpn:viz_name>1</opencpn:viz_name>
+      <opencpn:shared>1</opencpn:shared>
+      <opencpn:arrival_radius>0.050</opencpn:arrival_radius>
+      <opencpn:waypoint_range_rings visible="false" number="0" step="1" units="0" colour="#FF0000" />
+      <opencpn:scale_min_max UseScale="false" ScaleMin="2147483646" ScaleMax="0" />
+    </extensions>
+  </wpt>
+  <wpt lat="30.073965000" lon="-90.120415000">
+    <time>2016-08-26T20:26:07Z</time>
+    <name>SYC "P"</name>
+    <sym>diamond</sym>
+    <type>WPT</type>
+    <extensions>
+      <opencpn:guid>21253ca5-3620-4b37-9809-c57246f90433</opencpn:guid>
+      <opencpn:viz_name>1</opencpn:viz_name>
+      <opencpn:shared>1</opencpn:shared>
+      <opencpn:arrival_radius>0.050</opencpn:arrival_radius>
+      <opencpn:waypoint_range_rings visible="false" number="0" step="1" units="0" colour="#FF0000" />
+      <opencpn:scale_min_max UseScale="false" ScaleMin="2147483646" ScaleMax="0" />
+    </extensions>
+  </wpt>
+  <wpt lat="30.114500000" lon="-90.038000000">
+    <time>2016-08-26T20:27:21Z</time>
+    <name>SYC "R"</name>
+    <sym>diamond</sym>
+    <type>WPT</type>
+    <extensions>
+      <opencpn:guid>49e41f3e-9240-42f2-8aed-99e23ed7d085</opencpn:guid>
+      <opencpn:viz_name>1</opencpn:viz_name>
+      <opencpn:arrival_radius>0.050</opencpn:arrival_radius>
+      <opencpn:waypoint_range_rings visible="false" number="0" step="1" units="0" colour="#FF0000" />
+      <opencpn:scale_min_max UseScale="false" ScaleMin="2147483646" ScaleMax="0" />
+    </extensions>
+  </wpt>
+  <wpt lat="30.037228333" lon="-90.126350000">
+    <time>2020-09-10T11:36:11Z</time>
+    <name>SYC "S"</name>
+    <sym>1st-Diamond</sym>
+    <type>WPT</type>
+    <extensions>
+      <opencpn:guid>630f9b4d-694c-4225-b14b-2a8141fcdb7b</opencpn:guid>
+      <opencpn:viz_name>1</opencpn:viz_name>
+      <opencpn:arrival_radius>0.050</opencpn:arrival_radius>
+      <opencpn:waypoint_range_rings visible="false" number="0" step="1" units="0" colour="#FF0000" />
+      <opencpn:scale_min_max UseScale="false" ScaleMin="2147483646" ScaleMax="0" />
+    </extensions>
+  </wpt>
+  <wpt lat="30.037260419" lon="-90.126638506">
+    <time>2016-08-26T20:29:23Z</time>
+    <name>SYC "S"</name>
+    <sym>diamond</sym>
+    <type>WPT</type>
+    <extensions>
+      <opencpn:guid>3508c40c-1b46-4f25-8563-8ffc34b04067</opencpn:guid>
+      <opencpn:viz_name>1</opencpn:viz_name>
+      <opencpn:shared>1</opencpn:shared>
+      <opencpn:arrival_radius>0.050</opencpn:arrival_radius>
+      <opencpn:waypoint_range_rings visible="false" number="0" step="1" units="0" colour="#FF0000" />
+      <opencpn:scale_min_max UseScale="false" ScaleMin="2147483646" ScaleMax="0" />
+    </extensions>
+  </wpt>
+  <wpt lat="30.043333333" lon="-90.103333333">
+    <time>2016-08-26T20:21:56Z</time>
+    <name>SYC "T"</name>
+    <sym>diamond</sym>
+    <type>WPT</type>
+    <extensions>
+      <opencpn:guid>5b29077c-5baf-46f0-b333-ab8f2d338025</opencpn:guid>
+      <opencpn:viz_name>1</opencpn:viz_name>
+      <opencpn:arrival_radius>0.050</opencpn:arrival_radius>
+      <opencpn:waypoint_range_rings visible="false" number="0" step="1" units="0" colour="#FF0000" />
+      <opencpn:scale_min_max UseScale="false" ScaleMin="2147483646" ScaleMax="0" />
+    </extensions>
+  </wpt>
+  <wpt lat="30.037306175" lon="-90.138241645">
+    <time>2016-08-26T20:30:35Z</time>
+    <name>SYC "U"</name>
+    <sym>diamond</sym>
+    <type>WPT</type>
+    <extensions>
+      <opencpn:guid>63dbfe42-2115-4002-b228-ce871ee58454</opencpn:guid>
+      <opencpn:viz_name>1</opencpn:viz_name>
+      <opencpn:arrival_radius>0.050</opencpn:arrival_radius>
+      <opencpn:waypoint_range_rings visible="false" number="0" step="1" units="0" colour="#FF0000" />
+      <opencpn:scale_min_max UseScale="false" ScaleMin="2147483646" ScaleMax="0" />
+    </extensions>
+  </wpt>
+  <wpt lat="30.045703636" lon="-90.132650918">
+    <time>2016-08-26T20:31:28Z</time>
+    <name>SYC "V"</name>
+    <sym>diamond</sym>
+    <type>WPT</type>
+    <extensions>
+      <opencpn:guid>1bf8ded5-6fd9-45e6-ad44-0a28672d7c29</opencpn:guid>
+      <opencpn:viz_name>1</opencpn:viz_name>
+      <opencpn:arrival_radius>0.050</opencpn:arrival_radius>
+      <opencpn:waypoint_range_rings visible="false" number="0" step="1" units="0" colour="#FF0000" />
+      <opencpn:scale_min_max UseScale="false" ScaleMin="2147483646" ScaleMax="0" />
+    </extensions>
+  </wpt>
+  <wpt lat="30.046712985" lon="-90.143884843">
+    <time>2016-08-26T20:32:21Z</time>
+    <name>SYC "W"</name>
+    <sym>diamond</sym>
+    <type>WPT</type>
+    <extensions>
+      <opencpn:guid>007a2c02-e772-4645-8662-5f0c2dedf728</opencpn:guid>
+      <opencpn:viz_name>1</opencpn:viz_name>
+      <opencpn:arrival_radius>0.050</opencpn:arrival_radius>
+      <opencpn:waypoint_range_rings visible="false" number="0" step="1" units="0" colour="#FF0000" />
+      <opencpn:scale_min_max UseScale="false" ScaleMin="2147483646" ScaleMax="0" />
+    </extensions>
+  </wpt>
+  <wpt lat="30.055338333" lon="-90.136658333">
+    <time>2016-08-26T20:33:08Z</time>
+    <name>SYC "X"</name>
+    <sym>diamond</sym>
+    <type>WPT</type>
+    <extensions>
+      <opencpn:guid>68e345b2-3932-4b24-bc54-fa496099567e</opencpn:guid>
+      <opencpn:viz_name>1</opencpn:viz_name>
+      <opencpn:shared>1</opencpn:shared>
+      <opencpn:arrival_radius>0.050</opencpn:arrival_radius>
+      <opencpn:waypoint_range_rings visible="false" number="0" step="1" units="0" colour="#FF0000" />
+      <opencpn:scale_min_max UseScale="false" ScaleMin="2147483646" ScaleMax="0" />
+    </extensions>
+  </wpt>
+  <wpt lat="30.054329768" lon="-90.124897782">
+    <time>2016-08-26T20:33:40Z</time>
+    <name>SYC "Y"</name>
+    <sym>diamond</sym>
+    <type>WPT</type>
+    <extensions>
+      <opencpn:guid>5bf2a795-8a47-4a93-bfab-2a9578e3f6ef</opencpn:guid>
+      <opencpn:viz_name>1</opencpn:viz_name>
+      <opencpn:arrival_radius>0.050</opencpn:arrival_radius>
+      <opencpn:waypoint_range_rings visible="false" number="0" step="1" units="0" colour="#FF0000" />
+      <opencpn:scale_min_max UseScale="false" ScaleMin="2147483646" ScaleMax="0" />
+    </extensions>
+  </wpt>
+  <wpt lat="30.044970000" lon="-90.119360000">
+    <time>2016-08-26T20:34:18Z</time>
+    <name>SYC "Z"</name>
+    <sym>diamond</sym>
+    <type>WPT</type>
+    <extensions>
+      <opencpn:guid>69bc03f6-f91c-4f93-8b69-55793c94eb92</opencpn:guid>
+      <opencpn:viz_name>1</opencpn:viz_name>
+      <opencpn:arrival_radius>0.050</opencpn:arrival_radius>
+      <opencpn:waypoint_range_rings visible="false" number="0" step="1" units="0" colour="#FF0000" />
+      <opencpn:scale_min_max UseScale="false" ScaleMin="2147483646" ScaleMax="0" />
+    </extensions>
+  </wpt>
+  <wpt lat="30.204015000" lon="-89.834968333">
+    <time>2018-06-28T09:48:18Z</time>
+    <name>US 11 Bridge</name>
+    <sym>1st-Active-Waypoint</sym>
+    <type>WPT</type>
+    <extensions>
+      <opencpn:guid>2926c683-5284-46be-afb8-23335b830eae</opencpn:guid>
+      <opencpn:viz_name>1</opencpn:viz_name>
+      <opencpn:arrival_radius>0.050</opencpn:arrival_radius>
+      <opencpn:waypoint_range_rings visible="false" number="0" step="1" units="0" colour="#FF0000" />
+      <opencpn:scale_min_max UseScale="true" ScaleMin="2147483646" ScaleMax="0" />
+    </extensions>
+  </wpt>
+</gpx>

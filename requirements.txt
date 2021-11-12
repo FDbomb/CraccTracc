@@ -1,0 +1,4 @@
+
+pandas==1.3.4
+geographiclib==1.52
+matplotlib==3.4.3
