@@ -1,0 +1,8 @@
+# Ignore pickle files
+*.pkl
+
+# Ignore Python
+*.pyc
+
+# Ignore OS X specific files
+*.DS_Store

@@ -1,3 +1,4 @@
+__version__ = '0.1.0'
 import xml.etree.ElementTree as ET
 import pandas as pd
 from geographiclib.geodesic import Geodesic
@@ -103,18 +104,18 @@ def plot2(df):
 def main():
 
 	# set the source file to analyse
-	source = "data/activity_3427215863.gpx"
+	source = "cracctracc/data/activity_3427215863.gpx"
 
 	# save df from GPX data
 	df = gpx_to_df(source)
 	# uncomment to save/load df to pickle to load faster next time
-	df.to_pickle('data/activity_3427215863.pkl')
-	df = pd.read_pickle('data/activity_3427215863.pkl')
+	df.to_pickle('cracctracc/data/activity_3427215863.pkl')
+	df = pd.read_pickle('cracctracc/data/activity_3427215863.pkl')
 
 	# add speed and plot
 	df = add_speed(df)
 	plot2(df)
 
 
-if __name__ == '__main__':
-	main()
+#if __name__ == '__main__':
+#	main()
