@@ -73,29 +73,27 @@ def add_speed(df):
 
 def plot(df):
 
-	fig, axs = plt.subplots(2, 2)
+	fig = plt.figure()
+
+	ax1 = fig.add_subplot(211)
+	ax2 = fig.add_subplot(234)
+	ax3 = fig.add_subplot(235)
+	ax4 = fig.add_subplot(236, projection='polar')
 
 	# plot scatter of path travelled
-	axs[0, 0].scatter(df['lat'], df['lon'])
-	axs[0, 0].set_title('Course')
+	ax1.plot(df['lat'], df['lon'])
+	ax1.set_title('Course')
 
 	# plot speed vs time
-	axs[1, 0].plot(df['time'], df['knots'])
-	axs[1, 0].set_title('Speed over time')
+	ax2.plot(df['time'], df['knots'])
+	ax2.set_title('Speed over time')
 
 	# plot heading vs time
-	axs[1, 1].plot(df['time'], df['heading'])
-	axs[1, 1].set_title('Heading over time')
+	ax3.plot(df['time'], df['heading'])
+	ax3.set_title('Heading over time')
 
-	plt.show()
-
-
-def plot2(df):
-
-	fig, axs = plt.subplots(subplot_kw={'projection': 'polar'})
-
-	axs.plot(df['rad_heading'], df['knots'])
-	axs.set_title('POlarized')
+	ax4.plot(df['rad_heading'], df['knots'])
+	ax4.set_title('POlarized')
 
 	plt.show()
 
@@ -113,7 +111,7 @@ def main():
 
 	# add speed and plot
 	df = add_speed(df)
-	plot2(df)
+	plot(df)
 
 
 if __name__ == '__main__':
