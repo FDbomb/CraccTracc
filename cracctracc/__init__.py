@@ -6,6 +6,9 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 import numpy as np
 
+import click
+import logging
+
 
 def gpx_to_df(source):
 
@@ -96,12 +99,38 @@ def plot2(df):
     fig, axs = plt.subplots(subplot_kw={'projection': 'polar'})
 
     axs.plot(df['rad_heading'], df['knots'])
-    axs.set_title('POlarized')
+    axs.set_title('Polarized')
 
     plt.show()
 
 
-def main():
+# Setup click
+@click.command()
+@click.argument('gpx_track_file',
+                type=click.File('r'))   # Add arg for ingress GPX track file
+@click.option('--debug',
+              '-d',
+              help='Turn debug logging on',
+              is_flag=True,
+              default=False)            # Debug option switch
+
+def main(gpx_track_file, debug):
+    # Setup logging
+    log = logging.getLogger(__name__)
+    console_handler = logging.StreamHandler()
+    if (debug):
+        log.setLevel(logging.DEBUG)
+        console_handler.setLevel(logging.DEBUG)
+        formatter = logging.Formatter(fmt="<%(levelname).4s> %(module)s>>%(funcName)s() :: %(message)s")
+    else:
+        log.setLevel(logging.INFO)
+        console_handler.setLevel(logging.INFO)
+        formatter = logging.Formatter(fmt="%(message)s")
+    console_handler.setFormatter(formatter)
+    log.addHandler(console_handler)
+
+    log.info("CraccTracc vX.X.X\n")
+    log.debug("Debug enabled")
 
     # set the source file to analyse
     source = "cracctracc/data/activity_3427215863.gpx"
@@ -115,7 +144,3 @@ def main():
     # add speed and plot
     df = add_speed(df)
     plot2(df)
-
-
-#if __name__ == '__main__':
-#   main()

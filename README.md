@@ -14,6 +14,12 @@ $ poetry install # to install dependencies specified in pyproject.toml (.lock is
 $ poetry run [script] # executes a script defined in the [tool.poetry.scripts] section of pyproject.toml (or if [script] is left blank the default run script will execute)
 ```
 
+To run CraccTracc in CLI mode use the following command
+
+```shell
+$ poetry run python3 cracctracc --debug cracctracc/data/activity_3427215863.gpx
+```
+
 ## More Useful Poetry Commands
 
 ```shell
