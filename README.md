@@ -14,6 +14,23 @@ $ poetry install # to install dependencies specified in pyproject.toml (.lock is
 $ poetry run [script] # executes a script defined in the [tool.poetry.scripts] section of pyproject.toml (or if [script] is left blank the default run script will execute)
 ```
 
+To run CraccTracc in CLI mode use the following command:
+
+```shell
+$ poetry run python3 cracctracc --debug data/activity_3427215863.gpx
+```
+
+To view CraccTracc CLI options:
+
+```shell
+$ poetry run python3 cracctracc --help
+```
+
+## Code Formating
+This project uses [Black](https://github.com/psf/black/) for code formatting. Configuration is in the `[tool.black]` section of `pyproject.toml`. Ideally the editor in your development environment would run Black upon save of *.py filetypes.
+
+CraccTracc follows PEP 8 guidelines, however maximum line length is increased to 120.
+
 ## More Useful Poetry Commands
 
 ```shell
