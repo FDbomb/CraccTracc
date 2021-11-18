@@ -26,6 +26,11 @@ To view CraccTracc CLI options:
 $ poetry run python3 cracctracc --help
 ```
 
+## Code Formating
+This project uses [Black](https://github.com/psf/black/) for code formatting. Configuration is in the `[tool.black]` section of `pyproject.toml`. Ideally the editor in your development environment would run Black upon save of *.py filetypes.
+
+CraccTracc follows PEP 8 guidelines, however maximum line length is increased to 120.
+
 ## More Useful Poetry Commands
 
 ```shell
