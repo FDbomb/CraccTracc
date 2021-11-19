@@ -1,6 +1,6 @@
 # Ignore intermediary files
 *.pkl
-*.csv
+data/*.csv
 
 # Ignore Python
 *.pyc
