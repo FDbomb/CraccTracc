@@ -7,3 +7,6 @@ data/*.csv
 
 # Ignore OS X specific files
 *.DS_Store
+
+# Ignore MATLAB autosave files
+*.asv

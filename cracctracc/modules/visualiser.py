@@ -15,7 +15,7 @@ def plot(log, df):
     ax4 = fig.add_subplot(236, projection="polar")
 
     # plot scatter of path travelled
-    ax1.plot(df["lat"], df["lon"])
+    ax1.plot(df["lon"], df["lat"])
     ax1.set_title("Course")
 
     # plot speed vs time
