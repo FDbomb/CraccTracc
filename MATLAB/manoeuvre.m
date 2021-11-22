@@ -48,6 +48,34 @@ activity.msSmooth = movmean(activity.ms', [5 0])';
 % Calculate relative heading to TWD
 activity.relativeHeading = activity.trueHeadSmooth - trueWindHeading;
 
+% Classifying point of sails
+headToWind = 1;
+angle_headToWind = 30;
+closeHaul = 2;
+angle_closeHaul = 90;
+beamReach = 3;
+angle_beamReach = 135;
+broadReach = 4;
+angle_broadReach = 170;
+squareRun = 5;
+angle_squareRun = 180;
+
+for count = 1:size(activity,1)
+    if (abs(activity.relativeHeading(count)) < angle_headToWind)
+        activity.pointOfSail(count) = headToWind;
+    elseif (abs(activity.relativeHeading(count)) < angle_closeHaul)
+        activity.pointOfSail(count) = closeHaul;
+    elseif (abs(activity.relativeHeading(count)) < angle_beamReach)
+        activity.pointOfSail(count) = beamReach;
+    elseif (abs(activity.relativeHeading(count)) < angle_broadReach)
+        activity.pointOfSail(count) = broadReach;
+    elseif (abs(activity.relativeHeading(count)) <= angle_squareRun)
+        activity.pointOfSail(count) = squareRun;
+    else
+        activity.pointOfSail(count) = 0;
+    end
+end
+
 
 %% Manoeuvre List
 % Gybes
@@ -57,7 +85,11 @@ gybe = [1495,
 
 % Tacks
 tack = [344,
-    387];
+    387,
+    456];
+
+% Bear Aways
+baway = [1369];
 
 %% Plotting
 % Up until first bear away approx 1200 records
@@ -68,9 +100,9 @@ figure(1);
 plot(activity.lon(start_record:end_record),activity.lat(start_record:end_record));
 grid on;
 
-figure(2);
-plot(activity.time(start_record:end_record),activity.trueHeadSmooth(start_record:end_record));
-grid on;
+% figure(2);
+% plot(activity.time(start_record:end_record),activity.trueHeadSmooth(start_record:end_record));
+% grid on;
 
 figure(3);
 subplot(2,1,1);
@@ -83,6 +115,9 @@ end
 for count = 1:size(gybe,1)
     xline(activity.time(gybe(count)),'--r');
 end
+for count = 1:size(baway,1)
+    xline(activity.time(baway(count)),'--m');
+end
 subplot(2,1,2);
 plot(activity.time(start_record:end_record),activity.msSmooth(start_record:end_record),'g','LineWidth',2);
 title('SOG (m/s, MA(5,0) )');
@@ -91,5 +126,8 @@ for count = 1:size(tack,1)
 end
 for count = 1:size(gybe,1)
     xline(activity.time(gybe(count)),'--r');
+end
+for count = 1:size(baway,1)
+    xline(activity.time(baway(count)),'--m');
 end
 grid on; grid minor;
