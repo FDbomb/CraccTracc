@@ -42,7 +42,6 @@ def manoeuvres(log, df):
     #   0deg, with E 90deg, W -90deg
 
     # need to shift headings to -180, 180 centered around the true wind direction
-    log.debug("test")
     df["rel_heading"] = df["heading"].map(fix_heading)
 
     # smooth out data, moving average over 5 points

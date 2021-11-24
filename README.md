@@ -17,10 +17,12 @@ $ poetry run [script] # executes a script defined in the [tool.poetry.scripts] s
 To run CraccTracc in CLI mode use the following command:
 
 ```shell
-$ poetry run python3 cracctracc --debug data/activity_3427215863.gpx
+$ poetry run python3 cracctracc --debug data/activity_7737592803.gpx
 ```
 
-To view CraccTracc CLI options:
+CraccTracc can export CSV metrics using the `-o` flag, or PKL metrics using the `-p` flag. All files will be exported to `./output/`
+
+To view all CraccTracc CLI options:
 
 ```shell
 $ poetry run python3 cracctracc --help
