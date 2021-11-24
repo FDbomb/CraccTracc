@@ -5,14 +5,11 @@
 import pandas as pd
 
 # given list of headings in geographiclib, convert to 360 clockwise from reference angle
-def fix_heading(heading):
+def fix_heading(log, heading, true_wind):
     # NOTE!!!!! - new module adds true wind column to df. This allows each point to have its own true
     #   wind which should be more accurate than one wind for the race and also, will allow this code
     #   to easily manage cleaning up winds. Maybe even this fix_heading function really would belong
     #   in that module
-
-    # true wind angle
-    true_wind = 150
 
     # convert heading to 0, 360 clockwise
     if heading < 0:
@@ -42,7 +39,7 @@ def manoeuvres(log, df):
     #   0deg, with E 90deg, W -90deg
 
     # need to shift headings to -180, 180 centered around the true wind direction
-    df["rel_heading"] = df["heading"].map(fix_heading)
+    df["rel_heading"] = df.apply(lambda x: fix_heading(log, x["heading"], x["true_wind_angle"]), axis=1)
 
     # smooth out data, moving average over 5 points
     # doesn't actually do that much idk lol

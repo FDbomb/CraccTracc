@@ -81,3 +81,12 @@ def add_speed(log, df):
     # drop the first row (no useful data) and return
     # return df.iloc[10:]  # !!!!! Currently taking 10 off cause we have 1 hella sus value somewhere in there
     return df
+
+
+def add_twa(log, df, twa):
+
+    # Statically set currently, this entire function needs to be modified, see comments in manoeuvres>>fix_heading()
+    df["true_wind_angle"] = twa
+    log.warning("TWA set statically at {} degrees!".format(twa))
+
+    return df

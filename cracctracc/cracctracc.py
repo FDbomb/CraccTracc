@@ -39,8 +39,11 @@ def main(gpx_track_file, debug, output_csv, output_pkl):
     # save df from GPX data
     df = gpx.create_df(log, source)
 
-    # add speed and plot
+    # add speed
     df = gpx.add_speed(log, df)
+
+    # add true wind angle
+    df = gpx.add_twa(log, df, 150)  # TWA set statically here as arg#3
 
     df2 = df
     df2 = mano.manoeuvres(log, df2)
