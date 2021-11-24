@@ -68,13 +68,13 @@ def create_plot3(log, df):
 
 def show_plots(log):
     plt.show(block=False)  # Show plots in non-blocking manner
-    log.debug("{} plots displayed".format(len(plt.get_fignums())))
+    log.debug(f"{len(plt.get_fignums())} plots displayed")
 
 
 def close_plots(log):
     num_plots = len(plt.get_fignums())
     plt.close("all")
     if len(plt.get_fignums()) == 0:
-        log.debug("{} plots closed".format(num_plots))
+        log.debug(f"{num_plots} plots closed")
     else:
         log.warning("Error closing plots")

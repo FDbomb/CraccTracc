@@ -27,14 +27,14 @@ def main(gpx_track_file, debug, output_csv, output_pkl):
     # Initialise logging
     log = clog.init_logger(debug)
 
-    log.info("CraccTracc {}\n".format(__version__))
+    log.info(f"CraccTracc {__version__}\n")
     log.debug("Debug enabled")
 
     # set the source file to analyse
     source = gpx_track_file.name
     source_base, source_ext = os.path.splitext(source)
     source_head, source_tail = os.path.split(source_base)
-    log.debug("Using {} as input data".format(source))
+    log.debug(f"Using {source} as input data")
 
     # save df from GPX data
     df = gpx.create_df(log, source)
@@ -52,12 +52,12 @@ def main(gpx_track_file, debug, output_csv, output_pkl):
         pathlib.Path(output_head).mkdir(parents=True, exist_ok=True)  # Check if output dir exists and create if not
         if output_csv:
             output_ext = "csv"
-            df.to_csv("{}/{}.{}".format(output_head, output_tail, output_ext))
-            log.info("Exported metrics to {}/{}.{}".format(output_head, output_tail, output_ext))
+            df.to_csv(f"{output_head}/{output_tail}.{output_ext}")
+            log.info(f"Exported metrics to {output_head}/{output_tail}.{output_ext}")
         if output_pkl:
             output_ext = "pkl"
-            df.to_pickle("{}/{}.{}".format(output_head, output_tail, output_ext))
-            log.info("Exported metrics to {}/{}.{}".format(output_head, output_tail, output_ext))
+            df.to_pickle(f"{output_head}/{output_tail}.{output_ext}")
+            log.info(f"Exported metrics to {output_head}/{output_tail}.{output_ext}")
 
     vis.create_plot(log, df)
     vis.create_plot3(log, df2)
