@@ -87,6 +87,6 @@ def add_twa(log, df, twa):
 
     # Statically set currently, this entire function needs to be modified, see comments in manoeuvres>>fix_heading()
     df["true_wind_angle"] = twa
-    log.warning("TWA set statically at {} degrees!".format(twa))
+    log.warning(f"TWA set statically at {twa} degrees!")
 
     return df
