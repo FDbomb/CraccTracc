@@ -17,6 +17,6 @@ def init_logger(debug_flag):
     console_handler.setFormatter(formatter)
     log.addHandler(console_handler)
 
-    log.debug("Logger initialised as {}".format(__name__))
+    log.debug(f"Logger initialised as {__name__}")
 
     return log
