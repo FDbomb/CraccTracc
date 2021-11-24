@@ -30,3 +30,26 @@ def plot(log, df):
     ax4.set_title("Polarized")
 
     plt.show()
+
+
+def plot2(df):
+
+    fig = plt.figure()
+    ax1 = fig.add_subplot(121)
+    ax2 = fig.add_subplot(122, projection="polar")
+
+    # plot speed vs time
+    # ax1.plot(df["time"], df["knots"] ** 2)
+    # ax1.set_title("Speed over time")
+
+    # plot heading vs time
+    ax1.plot(df["time"], df["rel_heading"])
+    ax1.set_title("Heading over time")
+
+    ax1.plot(df["time"], df["smooth_rel_heading"])
+    ax1.set_title("Heading over time")
+
+    ax2.plot(df["rad_heading"], df["knots"])
+    ax2.set_title("Polarized")
+
+    plt.show()

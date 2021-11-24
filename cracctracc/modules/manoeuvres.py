@@ -2,32 +2,7 @@
 # Input: pandas dataframe w/ time, speed, heading
 # Output: dataframe w/ type of manoeuvre, time of manoeuvre, length of manoeuvre
 
-import matplotlib.pyplot as plt
 import pandas as pd
-
-
-def plott(df):
-
-    fig = plt.figure()
-    ax1 = fig.add_subplot(121)
-    ax2 = fig.add_subplot(122, projection="polar")
-
-    # plot speed vs time
-    # ax1.plot(df["time"], df["knots"] ** 2)
-    # ax1.set_title("Speed over time")
-
-    # plot heading vs time
-    ax1.plot(df["time"], df["rel_heading"])
-    ax1.set_title("Heading over time")
-
-    ax1.plot(df["time"], df["smooth_rel_heading"])
-    ax1.set_title("Heading over time")
-
-    ax2.plot(df["rad_heading"], df["knots"])
-    ax2.set_title("Polarized")
-
-    plt.show()
-
 
 # given list of headings in geographiclib, convert to 360 clockwise from reference angle
 def fix_heading(heading):
@@ -67,6 +42,7 @@ def manoeuvres(log, df):
     #   0deg, with E 90deg, W -90deg
 
     # need to shift headings to -180, 180 centered around the true wind direction
+    log.debug("test")
     df["rel_heading"] = df["heading"].map(fix_heading)
 
     # smooth out data, moving average over 5 points
@@ -90,10 +66,3 @@ def manoeuvres(log, df):
     #   store manoeuvers - time start, time exit?, p->s tack, s->p tack
 
     return df
-
-
-if __name__ == "__main__":
-
-    df = pd.read_pickle("data/activity_7737592803.pkl")
-    df = manoeuvres(0, df)
-    plott(df)
