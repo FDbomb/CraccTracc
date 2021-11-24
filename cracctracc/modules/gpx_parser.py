@@ -26,6 +26,7 @@ def create_df(log, source):
         # point = <Element '{http://www.topografix.com/GPX/1/1}trkpt' at 0x11c3ec7c8>
         # point.attrib = {'lat': '-33.801796138286590576171875', 'lon': '151.28050739876925945281982421875'}
 
+        # time in UTC
         time = point.find("{http://www.topografix.com/GPX/1/1}time").text
         time = datetime.fromisoformat(time[:-1])  # need to strip trailing 'Z' for iso format
 
@@ -78,4 +79,5 @@ def add_speed(log, df):
     df["knots"] = df["m/s"] * 1.943844  # yes this in an approximation but meh fix it later
 
     # drop the first row (no useful data) and return
-    return df.iloc[10:]  # !!!!! Currently taking 10 off cause we have 1 hella sus value somewhere in there
+    # return df.iloc[10:]  # !!!!! Currently taking 10 off cause we have 1 hella sus value somewhere in there
+    return df
