@@ -9,6 +9,7 @@ from common import cracclog as clog
 # Submodules
 from modules import gpx_parser as gpx
 from modules import visualiser as vis
+from modules import manoeuvres as mano
 
 __version__ = importlib.metadata.version("cracctracc")
 
@@ -41,6 +42,9 @@ def main(gpx_track_file, debug, output_csv, output_pkl):
     # add speed and plot
     df = gpx.add_speed(log, df)
 
+    df2 = df
+    df2 = mano.manoeuvres(log, df2)
+
     # Save metrics for external analysis
     if output_csv or output_pkl:
         output_head = "output"
@@ -55,4 +59,10 @@ def main(gpx_track_file, debug, output_csv, output_pkl):
             df.to_pickle("{}/{}.{}".format(output_head, output_tail, output_ext))
             log.info("Exported metrics to {}/{}.{}".format(output_head, output_tail, output_ext))
 
-    vis.plot(log, df)
+    vis.create_plot(log, df)
+    vis.create_plot3(log, df2)
+
+    vis.show_plots(log)
+
+    input("Press Enter to exit...")
+    vis.close_plots(log)

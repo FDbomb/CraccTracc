@@ -5,9 +5,9 @@
 import matplotlib.pyplot as plt
 
 
-def plot(log, df):
+def create_plot(log, df):
 
-    fig = plt.figure()
+    fig = plt.figure(0)
 
     ax1 = fig.add_subplot(211)
     ax2 = fig.add_subplot(234)
@@ -29,12 +29,10 @@ def plot(log, df):
     ax4.plot(df["rad_heading"], df["knots"])
     ax4.set_title("Polarized")
 
-    plt.show()
 
+def create_plot2(log, df):
 
-def plot2(df):
-
-    fig = plt.figure()
+    fig = plt.figure(1)
     ax1 = fig.add_subplot(121)
     ax2 = fig.add_subplot(122, projection="polar")
 
@@ -52,4 +50,31 @@ def plot2(df):
     ax2.plot(df["rad_heading"], df["knots"])
     ax2.set_title("Polarized")
 
-    plt.show()
+
+def create_plot3(log, df):
+
+    fig = plt.figure(2)
+    ax1 = fig.add_subplot(111)
+
+    plt.grid(which="both", animated=True)
+
+    # plot heading vs time
+    ax1.plot(df["time"], df["rel_heading"])
+    ax1.set_title("Heading over time")
+
+    ax1.plot(df["time"], df["smooth_rel_heading"])
+    ax1.set_title("Heading over time")
+
+
+def show_plots(log):
+    plt.show(block=False)  # Show plots in non-blocking manner
+    log.debug("{} plots displayed".format(len(plt.get_fignums())))
+
+
+def close_plots(log):
+    num_plots = len(plt.get_fignums())
+    plt.close("all")
+    if len(plt.get_fignums()) == 0:
+        log.debug("{} plots closed".format(num_plots))
+    else:
+        log.warning("Error closing plots")

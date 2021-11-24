@@ -13,7 +13,8 @@ def main():
 
     df = pd.read_pickle("output/activity_7737592803-metrics.pkl")
     df = mano.manoeuvres(log, df)
-    vis.plot2(df)
+    vis.create_plot2(log, df)
+    vis.show_plots()
 
 
 if __name__ == "__main__":

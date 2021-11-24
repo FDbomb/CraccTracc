@@ -61,7 +61,7 @@ def manoeuvres(log, df):
     tack_labels = ["Port", "Starboard"]
     df["tack"] = pd.cut(df["smooth_rel_heading"], tack_bounds, labels=tack_labels, include_lowest=True, ordered=False)
 
-    # calculate manoeuvers from heading catagories
+    # calculate manoeuvers from heading categories
     #   store manoeuvers - time start, time exit?, p->s tack, s->p tack
 
     return df

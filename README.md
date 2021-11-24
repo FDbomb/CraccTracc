@@ -33,6 +33,13 @@ This project uses [Black](https://github.com/psf/black/) for code formatting. Co
 
 CraccTracc follows PEP 8 guidelines, however maximum line length is increased to 120.
 
+### pdb One-Liner
+At times it may be useful to drop the standard pdb one-liner into code. To prevent Black formatting this single line, add the `# fmt:skip` directive (see [#790](https://github.com/psf/black/issues/790). The copy-paste one liner is shown below for reference:
+
+```shell
+import pdb; pdb.set_trace()  # fmt:skip
+```
+
 ## More Useful Poetry Commands
 
 ```shell
