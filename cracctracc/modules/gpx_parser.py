@@ -40,7 +40,7 @@ def create_df(log, source):
 
     # make Pandas df to store data
     df = pd.DataFrame(df, columns=["time", "lat", "lon"])
-    log.debug("%s trackpoints recorded" % len(df))
+    log.debug(f"{len(df)} trackpoints recorded")
 
     return df
 
