@@ -28,6 +28,9 @@ To view all CraccTracc CLI options:
 $ poetry run python3 cracctracc --help
 ```
 
+### Update Guide for Python 3.10
+You may need to run `poetry install` once again in order to satisfy the `__version__ = importlib.metadata.version("cracctracc")` line in `cracctracc.py`. Please note that `importlib.metadata` does not read package metadata directly from the `pyproject.toml` file, instead it obtains metadata from installed packages.
+
 ## Code Formating
 This project uses [Black](https://github.com/psf/black/) for code formatting. Configuration is in the `[tool.black]` section of `pyproject.toml`. Ideally the editor in your development environment would run Black upon save of *.py filetypes.
 
