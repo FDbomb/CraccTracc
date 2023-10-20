@@ -40,7 +40,7 @@ def create_df(log, source):
 
     # make Pandas df to store data
     df = pd.DataFrame(df, columns=["time", "lat", "lon"])
-    log.debug("%s trackpoints recorded" % len(df))
+    log.debug(f"{len(df)} trackpoints recorded")
 
     return df
 
@@ -80,4 +80,13 @@ def add_speed(log, df):
 
     # drop the first row (no useful data) and return
     # return df.iloc[10:]  # !!!!! Currently taking 10 off cause we have 1 hella sus value somewhere in there
+    return df
+
+
+def add_twa(log, df, twa):
+
+    # Statically set currently, this entire function needs to be modified, see comments in manoeuvres>>fix_heading()
+    df["true_wind_angle"] = twa
+    log.warning(f"TWA set statically at {twa} degrees!")
+
     return df

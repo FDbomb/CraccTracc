@@ -2,42 +2,14 @@
 # Input: pandas dataframe w/ time, speed, heading
 # Output: dataframe w/ type of manoeuvre, time of manoeuvre, length of manoeuvre
 
-import matplotlib.pyplot as plt
 import pandas as pd
 
-
-def plott(df):
-
-    fig = plt.figure()
-    ax1 = fig.add_subplot(121)
-    ax2 = fig.add_subplot(122, projection="polar")
-
-    # plot speed vs time
-    # ax1.plot(df["time"], df["knots"] ** 2)
-    # ax1.set_title("Speed over time")
-
-    # plot heading vs time
-    ax1.plot(df["time"], df["rel_heading"])
-    ax1.set_title("Heading over time")
-
-    ax1.plot(df["time"], df["smooth_rel_heading"])
-    ax1.set_title("Heading over time")
-
-    ax2.plot(df["rad_heading"], df["knots"])
-    ax2.set_title("Polarized")
-
-    plt.show()
-
-
 # given list of headings in geographiclib, convert to 360 clockwise from reference angle
-def fix_heading(heading):
+def fix_heading(log, heading, true_wind):
     # NOTE!!!!! - new module adds true wind column to df. This allows each point to have its own true
     #   wind which should be more accurate than one wind for the race and also, will allow this code
     #   to easily manage cleaning up winds. Maybe even this fix_heading function really would belong
     #   in that module
-
-    # true wind angle
-    true_wind = 150
 
     # convert heading to 0, 360 clockwise
     if heading < 0:
@@ -67,7 +39,7 @@ def manoeuvres(log, df):
     #   0deg, with E 90deg, W -90deg
 
     # need to shift headings to -180, 180 centered around the true wind direction
-    df["rel_heading"] = df["heading"].map(fix_heading)
+    df["rel_heading"] = df.apply(lambda x: fix_heading(log, x["heading"], x["true_wind_angle"]), axis=1)
 
     # smooth out data, moving average over 5 points
     # doesn't actually do that much idk lol
@@ -86,7 +58,7 @@ def manoeuvres(log, df):
     tack_labels = ["Port", "Starboard"]
     df["tack"] = pd.cut(df["smooth_rel_heading"], tack_bounds, labels=tack_labels, include_lowest=True, ordered=False)
 
-    # calculate manoeuvers from heading catagories
+    # calculate manoeuvers from heading categories
     #   store manoeuvers - time start, time exit?, p->s tack, s->p tack
 
     #
