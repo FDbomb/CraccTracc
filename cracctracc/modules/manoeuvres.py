@@ -75,7 +75,7 @@ def manoeuvres(log, df):
 
     # apply point of sail map
     PoS_bounds = [0, 30, 90, 170, 180]
-    PoS_labels = ["Manoeuvre", "Upwind", "Downwind", "Manoeuvre"]
+    PoS_labels = ["Tack", "Upwind", "Downwind", "Gybe"]
     # x = pd.cut(df["smooth_rel_heading"].abs(), pd.IntervalIndex.from_breaks(PoS_bounds, closed="left"))
     df["PoS"] = pd.cut(
         df["smooth_rel_heading"].abs(), PoS_bounds, labels=PoS_labels, include_lowest=True, ordered=False
@@ -89,6 +89,8 @@ def manoeuvres(log, df):
     # calculate manoeuvers from heading catagories
     #   store manoeuvers - time start, time exit?, p->s tack, s->p tack
 
+    #
+
     return df
 
 
@@ -96,4 +98,6 @@ if __name__ == "__main__":
 
     df = pd.read_pickle("data/activity_7737592803.pkl")
     df = manoeuvres(0, df)
+    print(df[410:460])
+
     plott(df)
