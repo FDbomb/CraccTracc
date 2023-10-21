@@ -8,7 +8,6 @@ import numpy as np
 
 
 def create_df(log, source):
-
     # open GPX file using XML parser
     tree = ET.parse(source)
     root = tree.getroot()
@@ -46,7 +45,6 @@ def create_df(log, source):
 
 
 def calc_distance(log, lat1, lon1, lat2, lon2):
-
     # convert lat long inputs to float (yes this sucks but idk what to do) using list comprehension
     # lat1, lon1, lat2, lon2 = [float(x) for x in [lat1, lon1, lat2, lon2]]
     # currently not using this as already floats
@@ -60,7 +58,6 @@ def calc_distance(log, lat1, lon1, lat2, lon2):
 
 
 def add_speed(log, df):
-
     # calculate time delta between points, and add to the dataframe
     delta = df["time"].diff()  # can fill but probs gonna drop first row so meh .fillna(pd.Timedelta('0'))
     df["delta"] = delta.dt.total_seconds()
@@ -72,7 +69,7 @@ def add_speed(log, df):
     ]
     # result = [[dist, heading], [dist, heading], ..]
     df[["dist", "heading"]] = result
-    df["rad_heading"] = df["heading"] * np.pi / 180
+    df["rad_heading"] = np.rad2deg(df["heading"])
 
     # add speed
     df["m/s"] = df["dist"] / df["delta"]
@@ -84,7 +81,6 @@ def add_speed(log, df):
 
 
 def add_twa(log, df, twa):
-
     # Statically set currently, this entire function needs to be modified, see comments in manoeuvres>>fix_heading()
     df["true_wind_angle"] = twa
     log.warning(f"TWA set statically at {twa} degrees!")

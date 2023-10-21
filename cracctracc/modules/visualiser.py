@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 
 
 def create_plot(log, df):
-
     fig = plt.figure(0)
 
     ax1 = fig.add_subplot(211)
@@ -31,7 +30,6 @@ def create_plot(log, df):
 
 
 def create_plot2(log, df):
-
     fig = plt.figure(1)
     ax1 = fig.add_subplot(121)
     ax2 = fig.add_subplot(122, projection="polar")
@@ -44,7 +42,7 @@ def create_plot2(log, df):
     ax1.plot(df["time"], df["rel_heading"])
     ax1.set_title("Heading over time")
 
-    ax1.plot(df["time"], df["smooth_rel_heading"])
+    ax1.plot(df["time"], df["rel_heading"])
     ax1.set_title("Heading over time")
 
     ax2.plot(df["rad_heading"], df["knots"])
@@ -52,7 +50,6 @@ def create_plot2(log, df):
 
 
 def create_plot3(log, df):
-
     fig = plt.figure(2)
     ax1 = fig.add_subplot(111)
 
@@ -62,7 +59,7 @@ def create_plot3(log, df):
     ax1.plot(df["time"], df["rel_heading"])
     ax1.set_title("Heading over time")
 
-    ax1.plot(df["time"], df["smooth_rel_heading"])
+    ax1.plot(df["time"], df["rel_heading"])
     ax1.set_title("Heading over time")
 
 
