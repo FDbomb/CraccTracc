@@ -69,7 +69,7 @@ def add_speed(log, df):
     ]
     # result = [[dist, heading], [dist, heading], ..]
     df[["dist", "heading"]] = result
-    df["rad_heading"] = np.rad2deg(df["heading"])
+    df["rad_heading"] = np.deg2rad(df["heading"])
 
     # add speed
     df["m/s"] = df["dist"] / df["delta"]
