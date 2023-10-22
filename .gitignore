@@ -13,3 +13,6 @@ output/*
 
 # Ignore MATLAB autosave files
 *.asv
+
+# Ignore VScode config files
+.vscode/
