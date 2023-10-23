@@ -130,15 +130,25 @@ def identify_manoeuvres(log, df):
 
     # TODO: look for points around each tack/gybe, find start point and end point maybe by looking for change in heading
 
-    # find tacks and gybes using change in tack and TWA
-    df["tacks"] = (df["tack"].shift() != df["tack"]) & (df["rel_heading"].abs() <= 90)
-    df["gybe"] = (df["tack"].shift() != df["tack"]) & (df["rel_heading"].abs() > 90)
+    # define the conditions and values for each case
+    conditions = [
+        # find tacks and gybes using change in tack and TWA
+        (df["tack"].shift() != df["tack"]) & (df["rel_heading"].abs() <= 90),
+        (df["tack"].shift() != df["tack"]) & (df["rel_heading"].abs() > 90),
+        # round up - check we have gone from a downwind TWA to an upwind TWA
+        (df["rel_heading"].shift().abs() > 90) & (df["rel_heading"].abs() <= 90),
+        # bear away - check we have gone from a upwind TWA to an downwind TWA
+        (df["rel_heading"].shift().abs() <= 90) & (df["rel_heading"].abs() > 90),
+    ]
+    values = [
+        "tack",
+        "gybe",
+        "roundup",
+        "bearaway",
+    ]
 
-    # round up - check we have gone from a downwind TWA to an upwind TWA
-    df["roundup"] = (df["rel_heading"].shift().abs() > 90) & (df["rel_heading"].abs() <= 90)
-
-    # bear away - check we have gone from a upwind TWA to an downwind TWA
-    df["bearaway"] = (df["rel_heading"].shift().abs() <= 90) & (df["rel_heading"].abs() > 90)
+    # apply the conditions and values using numpy.select
+    df["manoeuvre"] = np.select(conditions, values, default=df["manoeuvre"])
 
     return df
 
@@ -197,8 +207,7 @@ def manoeuvres_analysis(log, df):
     #       the number of manoeuvres, how long each manoeuvre is, time start, time exit?, p->s tack, s->p tack, etc
 
     # Collect all manoeuvres into a new dataframe
-    # mask = df["manoeuvre"].isin(["Tack", "Gybe"])
-    # man_df = df[mask]
-    man_df = df[df["tacks"] == True]
+    mask = df["manoeuvre"].isin(["tack", "gybe", "roundup", "bearaway"])
+    man_df = df[mask]
 
     return man_df
