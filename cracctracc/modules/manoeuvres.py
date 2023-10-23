@@ -7,14 +7,14 @@ import numpy as np
 
 
 def fix_heading(heading, true_wind):
-    """Convert a heading centered on True North to a heading centered on the true wind.
+    """Convert heading to TWA given the TWD.
 
     Args:
         heading (float): The heading of the boat in regards to true North.
-        true_wind (float): The true wind angle.
+        true_wind (float): The True Wind Direction.
 
     Returns:
-        float: The heading of the boat in regards to the true wind angle, between 180 and -180 degrees.
+        float: The True Wind Angle of the boat, between 180 and -180 degrees.
 
     Raises:
         None
@@ -44,14 +44,14 @@ def fix_heading(heading, true_wind):
 
 
 def smooth_headings(log, df):
-    """Smooth the headings in a DataFrame.
+    """Smoothen and convert heading to TWA in a DataFrame.
 
     Args:
         log (logging.Logger): The common logger object.
-        df (pandas.DataFrame): The DataFrame containing the headings.
+        df (pandas.DataFrame): A DataFrame containing noisy rad_heading data and TWD.
 
     Returns:
-        pandas.DataFrame: The DataFrame with smoothed headings as a new column.
+        pandas.DataFrame: The DataFrame with smoothed TWA in radians as a new column.
 
     Raises:
         None
@@ -91,7 +91,7 @@ def apply_PoS(log, df):
 
     Args:
         log (logging.Logger): The common logger object.
-        df (pandas.DataFrame): The DataFrame to apply the PoS and tack to.
+        df (pandas.DataFrame): A DataFrame to containing rel_heading data.
 
     Returns:
         pandas.DataFrame: The DataFrame with the PoS and tack applied.
@@ -114,8 +114,37 @@ def apply_PoS(log, df):
     return df
 
 
-def manoeuvres(log, df):
+def identify_manoeuvres(log, df):
     """Identify manoeuvres in a DataFrame.
+
+    Args:
+        log (logging.Logger): The common logger object.
+        df (pandas.DataFrame): A DataFrame with tack and rel_heading data.
+
+    Returns:
+        pandas.DataFrame: The DataFrame with manoeuvres identified.
+
+    Raises:
+        None
+    """
+
+    # TODO: look for points around each tack/gybe, find start point and end point maybe by looking for change in heading
+
+    # find tacks and gybes using change in tack and TWA
+    df["tacks"] = (df["tack"].shift() != df["tack"]) & (df["rel_heading"].abs() <= 90)
+    df["gybe"] = (df["tack"].shift() != df["tack"]) & (df["rel_heading"].abs() > 90)
+
+    # round up - check we have gone from a downwind TWA to an upwind TWA
+    df["roundup"] = (df["rel_heading"].shift().abs() > 90) & (df["rel_heading"].abs() <= 90)
+
+    # bear away - check we have gone from a upwind TWA to an downwind TWA
+    df["bearaway"] = (df["rel_heading"].shift().abs() <= 90) & (df["rel_heading"].abs() > 90)
+
+    return df
+
+
+def manoeuvres(log, df):
+    """Proccess DataFrame to identify manoeuvres.
 
     Args:
         log (logging.Logger): The common logger object.
@@ -143,17 +172,8 @@ def manoeuvres(log, df):
     # not needed right now, analyse later? if its high for extended period that's bad, if low thats great
     df["rel_heading_change"] = df["rel_heading"].diff()
 
-    # detect tacks and gybes
-    # TODO: look for points around each tack/gybe, find start point and end point maybe by looking for change in heading
-
-    # identify all tacks and gybes by tack change
-    df["manoeuvre"] = df["tack"].shift() != df["tack"]
-
-    # round up - check we have gone from a downwind TWA to an upwind TWA
-    df["roundup"] = (df["rel_heading"].shift().abs() > 90) & (df["rel_heading"].abs() <= 90)
-
-    # bear away - check we have gone from a upwind TWA to an downwind TWA
-    df["bearaway"] = (df["rel_heading"].shift().abs() <= 90) & (df["rel_heading"].abs() > 90)
+    # detect manouevres
+    df = identify_manoeuvres(log, df)
 
     return df
 
@@ -179,6 +199,6 @@ def manoeuvres_analysis(log, df):
     # Collect all manoeuvres into a new dataframe
     # mask = df["manoeuvre"].isin(["Tack", "Gybe"])
     # man_df = df[mask]
-    man_df = df[df["manoeuvre"] == True]
+    man_df = df[df["tacks"] == True]
 
     return man_df
