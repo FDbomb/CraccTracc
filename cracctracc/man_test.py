@@ -18,7 +18,7 @@ def main():
     vis.show_plots(log)
 
     df2 = mano.manoeuvres_analysis(log, df)
-    log.debug(df2[0:100])
+    log.debug(df2[0:60])
 
 
 if __name__ == "__main__":

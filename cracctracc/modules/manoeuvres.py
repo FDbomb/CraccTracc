@@ -20,6 +20,12 @@ def fix_heading(heading, true_wind):
         None
     """
 
+    # TODO: Make sense of this comment lol
+    #   Convention from geographiclib is azimuth is measured clockwise from N 0deg, with E 90deg, W -90deg
+
+    # TODO: Rename this function and database column to more technical term - True Wind Angle (TWA)!
+    #   Rename current 'True Wind' to 'True Wind Direction' - TWD!
+
     # convert heading to 0, 360 clockwise
     if heading < 0:
         heading = 360 - abs(heading)
@@ -51,9 +57,6 @@ def smooth_headings(log, df):
         None
     """
 
-    # TODO: Make sense of this comment lol
-    # Convention from geographiclib is azimuth is measured clockwise from N 0deg, with E 90deg, W -90deg
-
     # TODO: This function is not yet good enough.
     # Need to test if smoothing is needed at all
     # If smoothing is needed, we should flatten the heading using [sin(heading), cos(heading)]
@@ -79,6 +82,7 @@ def smooth_headings(log, df):
     # drop the now uneeded columns
     df = df.drop("sm_rad_heading", axis=1)
 
+    log.debug(f"Smoothened the heading data in the DataFrame")
     return df
 
 
@@ -97,7 +101,7 @@ def apply_PoS(log, df):
     """
 
     # apply point of sail map
-    PoS_bounds = [0, 30, 60, 90, 180]
+    PoS_bounds = [0, 30, 60, 95, 180]
     PoS_labels = ["Head to Wind", "Upwind", "Reach", "Downwind"]
     df["PoS"] = pd.cut(df["rel_heading"].abs(), PoS_bounds, labels=PoS_labels, include_lowest=True, ordered=False)
 
@@ -106,18 +110,19 @@ def apply_PoS(log, df):
     tack_labels = ["Port", "Starboard"]
     df["tack"] = pd.cut(df["rel_heading"], tack_bounds, labels=tack_labels, include_lowest=True, ordered=False)
 
+    log.debug(f"Added points of sail and tack map to DataFrame")
     return df
 
 
 def manoeuvres(log, df):
-    """Perform manoeuvres analysis on a DataFrame.
+    """Identify manoeuvres in a DataFrame.
 
     Args:
-        log (str): The name of the log.
+        log (logging.Logger): The common logger object.
         df (pandas.DataFrame): The DataFrame to perform the analysis on.
 
     Returns:
-        pandas.DataFrame: The DataFrame with manoeuvres analysis applied.
+        pandas.DataFrame: The DataFrame with manoeuvres identified.
 
     Raises:
         None
@@ -125,6 +130,7 @@ def manoeuvres(log, df):
 
     # shift headings to -180, 180 centered around the true wind direction
     df["rel_heading"] = df.apply(lambda x: fix_heading(x["heading"], x["true_wind_angle"]), axis=1)
+    log.debug(f"Calculated the True Wind Angle (TWA)")
 
     # smooth headings data to remove noise
     # TODO: fix this implementation, currently not good enough. Hopefully 10Hz data is better
@@ -138,21 +144,41 @@ def manoeuvres(log, df):
     df["rel_heading_change"] = df["rel_heading"].diff()
 
     # detect tacks and gybes
-    # TODO: implement this, idea below:
-    #   1. find change from port to starboard tack and mark as gybe if downwind, tack if upwind
-    #   2. find change from upwind to downwind = round up
-    #   3. find change from downwind to upwind = bear away
-    #   4. look for points around each tack/gybe, find start point and end point maybe by looking for change in heading
+    # TODO: look for points around each tack/gybe, find start point and end point maybe by looking for change in heading
+
+    # identify all tacks and gybes by tack change
+    df["manoeuvre"] = df["tack"].shift() != df["tack"]
+
+    # round up - check we have gone from a downwind TWA to an upwind TWA
+    df["roundup"] = (df["rel_heading"].shift().abs() > 90) & (df["rel_heading"].abs() <= 90)
+
+    # bear away - check we have gone from a upwind TWA to an downwind TWA
+    df["bearaway"] = (df["rel_heading"].shift().abs() <= 90) & (df["rel_heading"].abs() > 90)
 
     return df
 
 
 def manoeuvres_analysis(log, df):
-    # the idea with this function is to make a new dataframe with the manoeuvres data
-    # then we can use this to analyse the number of manoeuvres, how long each manoeuvre is, etc
+    """Create a DataFrame of manoeuvres with analysis given a DataFrame.
 
-    # store manoeuvers - time start, time exit?, p->s tack, s->p tack
-    mask = df["Manoeuvre"].isin(["Tack", "Gybe"])
-    man_df = df[mask]
+    Args:
+        log (logging.Logger): The common logger object.
+        df (pandas.DataFrame): The DataFrame containing manoeuvres.
+
+    Returns:
+        pandas.DataFrame: A new DataFrame with manoeuvres analysis applied.
+
+    Raises:
+        None
+    """
+
+    # TODO: The idea with this function is to make a new dataframe with the manoeuvres data,
+    #   then we can use this to store and analyse:
+    #       the number of manoeuvres, how long each manoeuvre is, time start, time exit?, p->s tack, s->p tack, etc
+
+    # Collect all manoeuvres into a new dataframe
+    # mask = df["manoeuvre"].isin(["Tack", "Gybe"])
+    # man_df = df[mask]
+    man_df = df[df["manoeuvre"] == True]
 
     return man_df
