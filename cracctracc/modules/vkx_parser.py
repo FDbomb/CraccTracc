@@ -26,21 +26,44 @@ def create_df(log, source):
    s32 - 32s - 32-byte string
     """
 
-    row_key_fmt = struct.Struct("<B")
-    page_header_fmt = struct.Struct("<B6x")
-    page_terminator_fmt = struct.Struct("<H")
-    position_data_fmt = struct.Struct("<Qii7f")
-    """
-    declination = 
-    race_event = 
-    line_position = 
-    shift_angle = 
-    device_config = 
-    wind_data =
-    # internal_messages = 
-    """
-
     result = []
+
+    row_key_fmt = struct.Struct("<B")
+    format_strings = {
+        int("FF", 16): struct.Struct("<B6x"),  # Page Header
+        int("FE", 16): struct.Struct("<H"),  # Page Terminator
+        int("02", 16): struct.Struct("<Qii7f"),  # Position, Velocity, and Orientation
+        int("03", 16): struct.Struct("<Qfii"),  # Declination
+        int("04", 16): struct.Struct("<QBi"),  # Race Timer Event
+        int("05", 16): struct.Struct("<QBii"),  # Line Position - not right lat and long when tested!!!
+        int("06", 16): struct.Struct("<QBBff"),  # Shift Angle
+        int("08", 16): struct.Struct("<Q4xB"),  # Device Configuration
+        int("0A", 16): struct.Struct("<Qff"),  # Wind Data
+        int("01", 16): struct.Struct("<32x"),  # Internal Message
+        int("07", 16): struct.Struct("<12x"),  # Internal Message
+        int("0E", 16): struct.Struct("<16x"),  # Internal Message
+        int("20", 16): struct.Struct("<13x"),  # Internal Message
+    }
+
+    """ 
+    # TODO: this is the same as above, maybe more readable? neglible performance difference
+    data = [
+        ["FF", "<B6x"],  # Page Header
+        ["FE", "<H"],  # Page Terminator
+        ["02", "<Qii7f"],  # Position, Velocity, and Orientation
+        ["03", "<Qfii"],  # Declination
+        ["04", "<QBi"],  # Race Timer Event
+        ["05", "<QBii"],  # Line Position
+        ["06", "<QBBff"],  # Shift Angle
+        ["08", "<Q4xB"],  # Device Configuration
+        ["0A", "<Qff"],  # Wind Data
+        ["01", "<32x"],  # Internal Message
+        ["07", "<12x"],  # Internal Message
+        ["0E", "<16x"],  # Internal Message
+        ["20", "<13x"],  # Internal Message
+    ]
+    format_strings = {int(key, 16): struct.Struct(value) for key, value in data}
+    """
 
     # can I unpack this so I dont have to keep the file open?
     #   ie data = f.read() and then next look read through data?
@@ -48,33 +71,47 @@ def create_df(log, source):
         while True:
             # read the row key to find what data we are working with
             row_key = f.read(row_key_fmt.size)
-
-            # check file is empty
             if not row_key:
-                break
+                break  # if we are at the end of the file
 
             # unpack row key - need this to find what packet we are working with
             [row_key] = row_key_fmt.unpack(row_key)
-            log.debug(f"Unpacked {row_key} row key")
 
-            # unpack data based on row key
-            if row_key == 255:
-                result.append("Page Header")
-                result.append(page_header_fmt.unpack(f.read(page_header_fmt.size)))
-                log.debug(f"Woo hoo unpacked Page Header")
-            elif row_key == 254:
-                result.append("Page Terminator")
-                result.append(page_terminator_fmt.unpack(f.read(page_terminator_fmt.size)))
-                log.debug(f"Woo hoo unpacked Page Terminator")
-            elif row_key == 2:
-                result.append("Position Data")
-                result.append(position_data_fmt.unpack(f.read(position_data_fmt.size)))
-                log.debug(f"Woo hoo unpacked Position Data")
+            # get the format string for the row key
+            format_string = format_strings.get(row_key)
 
-    log.debug(result)
+            # TODO: if the row key is not recognized, will need to raise error
+            if format_string is None:
+                log.debug(f"Unrecognized row key: {hex(row_key)}")
+                continue
+
+            # unpack the data using the format string
+            data = format_string.unpack(f.read(format_string.size))
+
+            # testing - Shift Angle data?
+            # if row_key == int("08", 16):
+            #    log.debug((hex(row_key), data))
+
+            # add the row key and data to the result list
+            result.append((hex(row_key), data))
+
+    log.debug(result[100:110])
 
     # Create dataframe from list
     # df = pd.DataFrame(df, columns=["x", "y", "z"])
+
+    # NOTE: this is the format of the Position, Velocity, and Orientation data
+    # ('0x2', (  # row key
+    # 1697854013769,  # time
+    # -338022350,  # lat
+    # 1512831650,  # lon
+    # 4.424224376678467,  # cog
+    # 4.166100978851318,  # sog
+    # 15.40000057220459,  # altitude
+    # 0.36210423707962036,  # quaternion w - Orientation in true NED (North, East, Down) frame
+    # -0.3621673583984375,  # quaternion x
+    # -0.12707969546318054,  # quaternion y
+    # -0.8494473695755005))  # quaternion z
 
     return df
 
