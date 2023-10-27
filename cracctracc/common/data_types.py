@@ -31,14 +31,27 @@ class RaceData:
 
         """
         self.data format
+            # given data
             time (UNIX milisecs)
             lat (32 bit int, 10^-7 deg)
             lon (32 bit int, 10^-7 deg)
-            cog (rads)
-            sog (m/s)
+            cog (deg -180, 180)
+            sog (m/s or knots?)
 
-            altitude (m)
+            # calculated data, needed
+            twd (deg to true north, 0, 360)
+            tws (m/s or knots?)
+
+            twa (deg from now, -180, 180)
+
+            # calculate data, needed or no?
             time_delta (s)
+            hdg (deg to true north, 0, 360)
+            roll (deg)
+            pitch (deg)
+
+            # uneeded data
+            altitude (m)
             distance (m)
 
         """
@@ -51,14 +64,6 @@ class RaceData:
     def add_boat(self, boat):
         self.boat = boat
 
-    def process_data(self):
-        if self.data_format == "VKX":
-            self.data = vkx(self.gps_data)
-        elif self.data_format == "GPX":
-            self.data = None  # PARSEGPX(self.gps_data)
-        elif self.data_format == "CSV":
-            self.data = None  # PARSECSV(self.gps_data)
-
 
 # SAMPLE USAGE!
 def sample_usage():
@@ -69,6 +74,7 @@ def sample_usage():
     boat1 = Boat("Boat 1")
 
     # create a RaceData instance
+    gps_data1 = []
     data1 = RaceData(gps_data1, race1, boat1)
 
     # add the Boat instance to the Race instance's entry_list

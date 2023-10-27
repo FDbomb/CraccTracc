@@ -10,8 +10,10 @@ from common import cracclog as clog
 from modules import gpx_parser as gpx
 from modules import visualiser as vis
 from modules import manoeuvres as mano
+from modules import parser
 
 __version__ = importlib.metadata.version("cracctracc")
+
 
 # Setup click
 @click.command()
@@ -37,13 +39,14 @@ def main(gpx_track_file, debug, output_csv, output_pkl):
     log.debug(f"Using {source} as input data")
 
     # save df from GPX data
-    df = gpx.create_df(log, source)
+    df = parser.parse(log, source, source_ext)
+    # df = gpx.create_df(log, source)
 
     # add speed
-    df = gpx.add_speed(log, df)
+    # df = parser.add_speed(log, df)
 
     # add true wind angle
-    df = gpx.add_twa(log, df, 150)  # TWA set statically here as arg#3
+    # df = gpx.add_twa(log, df, 150)  # TWA set statically here as arg#3
 
     df2 = df
     df2 = mano.manoeuvres(log, df2)

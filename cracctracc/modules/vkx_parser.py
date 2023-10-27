@@ -6,28 +6,38 @@ import numpy as np
 import struct
 
 
-def create_df(log, source):
-    # create list to append data to, use this to build dataframe later
-    df = []
-
+def euler_from_quaternions(w, x, y, z):
     """
-    vakaros - struct - description
+    Convert quaternions to Euler angles (roll, pitch, yaw).
+    NOTE: Written using Copilot and StackOverflow - not checked yet
+        https://stackoverflow.com/questions/56207448/efficient-quaternions-to-euler-transformation
 
-    u1 - B - unsigned 8-bit integer 
-    u2 - H - unsigned 16-bit integer
-    u4 - I - unsigned 32-bit integer
-    u8 - Q - unsigned 64-bit integer
-    i1 - b - signed 8-bit integer
-    i2 - h - signed 16-bit integer
-    i4 - i - signed 32-bit integer
-    f4 - f - 32-bit single precision floating point
-    x4 - 4x - 32-bit bitfield
-    s4 - 4s - 4-byte string
-   s32 - 32s - 32-byte string
+    Alternative method:
+    from scipy.spatial.transform import Rotation
+    rot = Rotation.from_quat([-0.03484,  0.68173,  0.03199, 0.73007])
+    print(rot.as_euler('xyz', degrees=True))
     """
+    # roll (x-axis rotation)
+    sinr_cosp = 2.0 * (w * x + y * z)
+    cosr_cosp = 1.0 - 2.0 * (x * x + y * y)
+    roll = np.arctan2(sinr_cosp, cosr_cosp)
 
-    result = []
+    # pitch (y-axis rotation)
+    sinp = 2.0 * (w * y - z * x)
+    sinp = np.clip(sinp, a_min=-1.0, a_max=1.0)
+    pitch = np.arcsin(sinp)
 
+    # yaw (z-axis rotation)
+    siny_cosp = 2.0 * (w * z + x * y)
+    cosy_cosp = 1.0 - 2.0 * (y * y + z * z)
+    # this gives us angles in the range -180, 180
+    yaw = np.arctan2(siny_cosp, cosy_cosp)
+
+    return np.rad2deg([roll, pitch, yaw])
+
+
+def unpack_vkx(log, source):
+    # Format strings for unpacking data from Vakaaro VKX files
     row_key_fmt = struct.Struct("<B")
     format_strings = {
         int("FF", 16): struct.Struct("<B6x"),  # Page Header
@@ -65,7 +75,12 @@ def create_df(log, source):
     format_strings = {int(key, 16): struct.Struct(value) for key, value in data}
     """
 
-    # can I unpack this so I dont have to keep the file open?
+    # create lists to append data to, use this to build dataframe later
+    pvo_results = []
+    race_results = []
+    wind_results = []
+
+    # TODO: can I unpack this so I dont have to keep the file open?
     #   ie data = f.read() and then next look read through data?
     with open(source, "rb") as f:
         while True:
@@ -80,43 +95,37 @@ def create_df(log, source):
             # get the format string for the row key
             format_string = format_strings.get(row_key)
 
-            # TODO: if the row key is not recognized, will need to raise error
+            # TODO: if the row key is not recognized, will need to raise error rather than just log it
             if format_string is None:
-                log.debug(f"Unrecognized row key: {hex(row_key)}")
+                log.warning(f"Unrecognized row key: {hex(row_key)}")
                 continue
 
             # unpack the data using the format string
             data = format_string.unpack(f.read(format_string.size))
 
             # testing - Shift Angle data?
-            # if row_key == int("08", 16):
-            #    log.debug((hex(row_key), data))
+            if row_key == int("05", 16):
+                log.debug((hex(row_key), data))
 
-            # add the row key and data to the result list
-            result.append((hex(row_key), data))
+            # add the unpacked data to the result list
+            if row_key == int("02", 16):
+                pvo_results.append(data)
+            elif row_key in [int("04", 16), int("05", 16), int("06", 16)]:
+                race_results.append(data)
+            elif row_key == int("0A", 16):
+                wind_results.append(data)
 
-    log.debug(result[100:110])
-
-    # Create dataframe from list
-    # df = pd.DataFrame(df, columns=["x", "y", "z"])
-
-    # NOTE: this is the format of the Position, Velocity, and Orientation data
-    # ('0x2', (  # row key
-    # 1697854013769,  # time
-    # -338022350,  # lat
-    # 1512831650,  # lon
-    # 4.424224376678467,  # cog
-    # 4.166100978851318,  # sog
-    # 15.40000057220459,  # altitude
-    # 0.36210423707962036,  # quaternion w - Orientation in true NED (North, East, Down) frame
-    # -0.3621673583984375,  # quaternion x
-    # -0.12707969546318054,  # quaternion y
-    # -0.8494473695755005))  # quaternion z
-
-    return df
+    return pvo_results, race_results, wind_results
 
 
-def test(log):
-    df = create_df(log, "data/Sutech-Atlas2 10-21-2023.vkx")
+def vkx_df(log, source):
+    pvo_results, race_results, wind_results = unpack_vkx(log, source)
+    df = pd.DataFrame(pvo_results, columns=["UTC", "lat", "lon", "sog", "cog", "alt", "Q_w", "Q_x", "Q_y", "Q_z"])
+
+    # calculate the euler angles from the quaternions
+    euler_angles = euler_from_quaternions(df["Q_w"], df["Q_x"], df["Q_y"], df["Q_z"])
+    df = df.assign(hdg=euler_angles[2], roll=euler_angles[0], pitch=euler_angles[1])
+    df = df.drop(columns=["Q_w", "Q_x", "Q_y", "Q_z"])
+    log.debug(f"Created DataFrame from VKX file: {source}")
 
     return df

@@ -6,11 +6,11 @@ import pandas as pd
 import numpy as np
 
 
-def fix_heading(heading, true_wind):
-    """Convert heading to TWA given the TWD.
+def hdg2twa(hdg, twd):
+    """Convert a heading to TWA given the TWD.
 
     Args:
-        heading (float): The heading of the boat in regards to true North.
+        heading (float): The heading or course over ground of the boat in regards to true North.
         true_wind (float): The True Wind Direction.
 
     Returns:
@@ -27,63 +27,20 @@ def fix_heading(heading, true_wind):
     #   Rename current 'True Wind' to 'True Wind Direction' - TWD!
 
     # convert heading to 0, 360 clockwise
-    if heading < 0:
-        heading = 360 - abs(heading)
+    if hdg < 0:
+        hdg = 360 - abs(hdg)
 
     # center the heading to the wind angle
-    heading = heading - true_wind
+    twa = hdg - twd
 
     # remove values past |180|, leaving bounds -180, 180
     # much much cleaner data visually, not much difference numerically
-    if heading > 180:
-        heading = -180 + abs(180 - heading)
-    elif heading <= -180:
-        heading = 180 - abs(180 + heading)
+    if twa > 180:
+        hdg = -180 + abs(180 - twa)
+    elif twa <= -180:
+        twa = 180 - abs(180 + twa)
 
-    return heading
-
-
-def smooth_headings(log, df):
-    """Smoothen and convert heading to TWA in a DataFrame.
-
-    Args:
-        log (logging.Logger): The common logger object.
-        df (pandas.DataFrame): A DataFrame containing noisy rad_heading data and TWD.
-
-    Returns:
-        pandas.DataFrame: The DataFrame with smoothed TWA in radians as a new column.
-
-    Raises:
-        None
-    """
-
-    # TODO: This function is not yet good enough.
-    # Need to test if smoothing is needed at all
-    # If smoothing is needed, we should flatten the heading using [sin(heading), cos(heading)]
-    # This way we will have a continuous function to smoothen, rather than -180,180 or 0,360
-    # After smoothing with whatever smoothing function is deemed best, use sign(sin(heading))*arccos(cos(heading)),
-    #   or arctan(sin(heading), cos(heading)) to obtain the new smoothened heading values
-
-    # TODO: realistically this should be done in gpx_paser.py
-    #   or even better, seperate module to pull wind data from BOM and then clean it up
-
-    # smooth heading using exponential weighing
-    df["sm_rad_heading"] = df["rad_heading"].ewm(alpha=0.8).mean()
-
-    # shift the smoothened radian heading toward north by the wind angle, results in the heading relative to the wind
-    df["sm_rad_heading"] = df["sm_rad_heading"] - np.deg2rad(df["true_wind_angle"])
-    # take modulo to bring radians back to one rotation maximum (ie in [0, 2 * pi])
-    df["sm_rad_heading"].mod(2 * np.pi)
-    # convert the smoothen radian heading back to degrees [0,360]
-    df["sm_rel_heading"] = np.degrees(df["sm_rad_heading"])
-    # split the heading into -180,180 format
-    df["sm_rel_heading"] = df.apply(lambda x: fix_heading(x["sm_rel_heading"], 0), axis=1)
-
-    # drop the now uneeded columns
-    df = df.drop("sm_rad_heading", axis=1)
-
-    log.debug(f"Smoothened the heading data in the DataFrame")
-    return df
+    return twa
 
 
 def apply_PoS(log, df):
@@ -91,7 +48,7 @@ def apply_PoS(log, df):
 
     Args:
         log (logging.Logger): The common logger object.
-        df (pandas.DataFrame): A DataFrame to containing rel_heading data.
+        df (pandas.DataFrame): A DataFrame to containing TWA data.
 
     Returns:
         pandas.DataFrame: The DataFrame with the PoS and tack applied.
@@ -103,12 +60,12 @@ def apply_PoS(log, df):
     # apply point of sail map
     PoS_bounds = [0, 30, 60, 95, 180]
     PoS_labels = ["Head to Wind", "Upwind", "Reach", "Downwind"]
-    df["PoS"] = pd.cut(df["rel_heading"].abs(), PoS_bounds, labels=PoS_labels, include_lowest=True, ordered=False)
+    df["PoS"] = pd.cut(df["twa"].abs(), PoS_bounds, labels=PoS_labels, include_lowest=True, ordered=False)
 
     # apply tack map
     tack_bounds = [-180, 0, 180]
     tack_labels = ["Port", "Starboard"]
-    df["tack"] = pd.cut(df["rel_heading"], tack_bounds, labels=tack_labels, include_lowest=True, ordered=False)
+    df["tack"] = pd.cut(df["twa"], tack_bounds, labels=tack_labels, include_lowest=True, ordered=False)
 
     log.debug(f"Added points of sail and tack map to DataFrame")
     return df
@@ -119,7 +76,7 @@ def identify_manoeuvres(log, df):
 
     Args:
         log (logging.Logger): The common logger object.
-        df (pandas.DataFrame): A DataFrame with tack and rel_heading data.
+        df (pandas.DataFrame): A DataFrame with tack and twa data.
 
     Returns:
         pandas.DataFrame: The DataFrame with manoeuvres identified.
@@ -133,19 +90,14 @@ def identify_manoeuvres(log, df):
     # define the conditions and values for each case
     conditions = [
         # find tacks and gybes using change in tack and TWA
-        (df["tack"].shift() != df["tack"]) & (df["rel_heading"].abs() <= 90),
-        (df["tack"].shift() != df["tack"]) & (df["rel_heading"].abs() > 90),
+        (df["tack"].shift() != df["tack"]) & (df["twa"].abs() <= 90),
+        (df["tack"].shift() != df["tack"]) & (df["twa"].abs() > 90),
         # round up - check we have gone from a downwind TWA to an upwind TWA
-        (df["rel_heading"].shift().abs() > 90) & (df["rel_heading"].abs() <= 90),
+        (df["twa"].shift().abs() > 90) & (df["twa"].abs() <= 90),
         # bear away - check we have gone from a upwind TWA to an downwind TWA
-        (df["rel_heading"].shift().abs() <= 90) & (df["rel_heading"].abs() > 90),
+        (df["twa"].shift().abs() <= 90) & (df["twa"].abs() > 90),
     ]
-    values = [
-        "tack",
-        "gybe",
-        "roundup",
-        "bearaway",
-    ]
+    values = ["tack", "gybe", "roundup", "bearaway"]
 
     # apply the conditions and values using numpy.select
     df["manoeuvre"] = np.select(conditions, values, default=np.nan)
@@ -168,19 +120,15 @@ def manoeuvres(log, df):
     """
 
     # shift headings to -180, 180 centered around the true wind direction
-    df["rel_heading"] = df.apply(lambda x: fix_heading(x["heading"], x["true_wind_angle"]), axis=1)
+    df["twa"] = df.apply(lambda x: hdg2twa(x["hdg"], x["twd"]), axis=1)
     log.debug(f"Calculated the True Wind Angle (TWA)")
-
-    # smooth headings data to remove noise
-    # TODO: fix this implementation, currently not good enough. Hopefully 10Hz data is better
-    # df = smooth_headings(log, df)
 
     # apply point of sail and tack maps
     df = apply_PoS(log, df)
 
     # find change in heading for each data point
     # not needed right now, analyse later? if its high for extended period that's bad, if low thats great
-    df["rel_heading_change"] = df["rel_heading"].diff()
+    # df["twa_change"] = df["twa"].diff()
 
     # detect manouevres
     df = identify_manoeuvres(log, df)

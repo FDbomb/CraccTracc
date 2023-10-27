@@ -18,14 +18,14 @@ def create_plot(log, df):
     ax1.set_title("Course")
 
     # plot speed vs time
-    ax2.plot(df["time"], df["knots"])
+    ax2.plot(df["time"], df["sog"])
     ax2.set_title("Speed over time")
 
     # plot heading vs time
-    ax3.plot(df["time"], df["heading"])
+    ax3.plot(df["time"], df["hdg"])
     ax3.set_title("Heading over time")
 
-    ax4.plot(df["rad_heading"], df["knots"])
+    ax4.plot(df["cog"], df["sog"])
     ax4.set_title("Polarized")
 
 
@@ -35,17 +35,17 @@ def create_plot2(log, df):
     ax2 = fig.add_subplot(122, projection="polar")
 
     # plot speed vs time
-    # ax1.plot(df["time"], df["knots"] ** 2)
+    # ax1.plot(df["time"], df["sog"] ** 2)
     # ax1.set_title("Speed over time")
 
     # plot heading vs time
-    ax1.plot(df["time"], df["rel_heading"])
+    ax1.plot(df["time"], df["twa"])
     ax1.set_title("Heading over time")
 
-    ax1.plot(df["time"], df["rel_heading"])
+    ax1.plot(df["time"], df["twa"])
     ax1.set_title("Heading over time")
 
-    ax2.plot(df["rad_heading"], df["knots"])
+    ax2.plot(df["cog"], df["knots"])
     ax2.set_title("Polarized")
 
 
@@ -56,15 +56,15 @@ def create_plot3(log, df):
     plt.grid(which="both", animated=True)
 
     # plot heading vs time
-    ax1.plot(df["time"], df["rel_heading"])
+    ax1.plot(df["time"], df["twa"])
     ax1.set_title("Heading over time")
 
-    ax1.plot(df["time"], df["rel_heading"])
+    ax1.plot(df["time"], df["twa"])
     ax1.set_title("Heading over time")
 
 
 def show_plots(log):
-    plt.show(block=False)  # Show plots in non-blocking manner
+    plt.show()  # Show plots in non-blocking manner
     log.debug(f"{len(plt.get_fignums())} plots displayed")
 
 
