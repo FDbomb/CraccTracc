@@ -17,7 +17,7 @@ def create_df(log, source):
     # pdb.set_trace()
 
     # create list to append data to, use this to build dataframe later
-    df = []
+    gps_data = []
 
     # populate df with data from GPX file (could calculate speed here for quicker execution, but worse readability)
     target_tag = "{http://www.topografix.com/GPX/1/1}trkpt"  # namespace - {http://www.topografix.com/GPX/1/1'}
@@ -29,16 +29,16 @@ def create_df(log, source):
         time = point.find("{http://www.topografix.com/GPX/1/1}time").text
         time = datetime.fromisoformat(time[:-1])  # need to strip trailing 'Z' for iso format
 
-        # not sure on setting these to floats, seems sus but can't give a good reason why
+        # TODO: not sure on setting these to floats, seems sus but can't give a good reason why
         # well now it's using numpy.float128s so... dunno
         lat = np.float128(point.attrib["lat"])
         lon = np.float128(point.attrib["lon"])
 
-        df.append({"time": time, "lat": lat, "lon": lon})
+        gps_data.append([time, lat, lon])
         # significant speed gains appending to list vs appending to dataframe (1.5s vs 25s)
 
     # make Pandas df to store data
-    df = pd.DataFrame(df, columns=["time", "lat", "lon"])
+    df = pd.DataFrame(gps_data, columns=["time", "lat", "lon"])
     log.debug(f"{len(df)} trackpoints recorded")
 
     return df
