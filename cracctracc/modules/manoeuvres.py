@@ -36,7 +36,7 @@ def hdg2twa(hdg, twd):
     # remove values past |180|, leaving bounds -180, 180
     # much much cleaner data visually, not much difference numerically
     if twa > 180:
-        hdg = -180 + abs(180 - twa)
+        twa = -180 + abs(180 - twa)
     elif twa <= -180:
         twa = 180 - abs(180 + twa)
 

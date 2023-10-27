@@ -5,7 +5,6 @@ from common import cracclog as clog
 
 # Submodules
 from modules import manoeuvres as mano
-from modules import visualiser as vis
 from modules import parser
 
 
