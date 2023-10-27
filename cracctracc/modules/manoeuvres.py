@@ -148,7 +148,7 @@ def identify_manoeuvres(log, df):
     ]
 
     # apply the conditions and values using numpy.select
-    df["manoeuvre"] = np.select(conditions, values, default=df["manoeuvre"])
+    df["manoeuvre"] = np.select(conditions, values, default=np.nan)
 
     return df
 
