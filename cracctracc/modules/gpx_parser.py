@@ -15,7 +15,8 @@ def calc_distance(log, lat1, lon1, lat2, lon2):
 
     # use WGS-84 ellipsoid = most globally accurate. Accurate to round-off and always converges
     g = Geodesic.WGS84.Inverse(lat1, lon1, lat2, lon2)
-    # g = {'lat1': XX, 'lon1': XX, 'lat2': XX, 'lon2': XX, 'a12': XX, 's12': 5.066904469936966, 'azi1': -35.80482359294056, 'azi2': -35.804805771546704}
+    # g = {'lat1': XX, 'lon1': XX, 'lat2': XX, 'lon2': XX, 'a12': XX, 's12': 5.066904469936966,
+    #   'azi1': -35.80482359294056, 'azi2': -35.804805771546704}
 
     # gives [dist, cog]
     return [g["s12"], g["azi1"]]

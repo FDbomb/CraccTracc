@@ -1,7 +1,6 @@
 # Module to parse VKX files and perform some calculations
 
 import pandas as pd
-from datetime import datetime
 import numpy as np
 import struct
 
@@ -55,7 +54,7 @@ def unpack_vkx(log, source):
         int("20", 16): struct.Struct("<13x"),  # Internal Message
     }
 
-    """ 
+    """
     # TODO: this is the same as above, maybe more readable? neglible performance difference
     data = [
         ["FF", "<B6x"],  # Page Header
