@@ -1,11 +1,11 @@
 import pandas as pd
 
 # Common modules
-from common import cracclog as clog
+from cracctracc.common import cracclog as clog
 
 # Submodules
-from modules import manoeuvres as mano
-from modules import parser
+from cracctracc.modules import manoeuvres as mano
+from cracctracc.modules import parser
 
 
 def main():

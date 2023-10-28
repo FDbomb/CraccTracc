@@ -67,7 +67,7 @@ def apply_PoS(log, df):
     tack_labels = ["Port", "Starboard"]
     df["tack"] = pd.cut(df["twa"], tack_bounds, labels=tack_labels, include_lowest=True, ordered=False)
 
-    log.debug(f"Added points of sail and tack map to DataFrame")
+    log.debug("Added points of sail and tack map to DataFrame")
     return df
 
 
@@ -121,7 +121,7 @@ def manoeuvres(log, df):
 
     # shift headings to -180, 180 centered around the true wind direction
     df["twa"] = df.apply(lambda x: hdg2twa(x["hdg"], x["twd"]), axis=1)
-    log.debug(f"Calculated the True Wind Angle (TWA)")
+    log.debug("Calculated the True Wind Angle (TWA)")
 
     # apply point of sail and tack maps
     df = apply_PoS(log, df)

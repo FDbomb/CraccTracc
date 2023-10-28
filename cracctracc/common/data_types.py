@@ -2,7 +2,6 @@
 
 import pandas as pd
 from datetime import datetime
-import numpy as np
 
 
 class Race:
@@ -81,3 +80,6 @@ def sample_usage():
     race1.entry_list.append(boat1)
     # add the Race instance to the Boat instance's races_list
     boat1.races_list.append(race1)
+
+    # do things with data1 here
+    data1 = data1

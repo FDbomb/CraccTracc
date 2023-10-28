@@ -1,11 +1,11 @@
 # Module to parse GPX files and perform some calculations
 
-from modules.gpx_parser import gpx_df
-from modules.vkx_parser import vkx_df
+from cracctracc.modules.gpx_parser import gpx_df
+from cracctracc.modules.vkx_parser import vkx_df
 
-import pandas as pd
-from datetime import datetime
-import numpy as np
+# import pandas as pd
+# from datetime import datetime
+# import numpy as np
 
 
 def create_df(log, source, df):
