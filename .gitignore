@@ -16,3 +16,4 @@ output/*
 
 # Ignore VScode config files
 .vscode/
+.pytest_cache/
