@@ -1,4 +1,4 @@
-from cracctracc.cracctracc import __version__
+from cracctracc import __version__
 
 
 def test_version():

@@ -6,6 +6,7 @@ data/*.csv
 output/*
 
 # Ignore Python
+__pycache__
 *.pyc
 
 # Ignore OS X specific files
