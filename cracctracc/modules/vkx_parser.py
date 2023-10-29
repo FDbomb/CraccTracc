@@ -5,7 +5,7 @@ import numpy as np
 import struct
 
 
-def euler_from_quaternions(w, x, y, z):
+def quatern2euler(w, x, y, z):
     """
     Convert quaternions to Euler angles (roll, pitch, yaw).
     NOTE: Written using Copilot and StackOverflow - not checked yet
@@ -16,9 +16,12 @@ def euler_from_quaternions(w, x, y, z):
     rot = Rotation.from_quat([-0.03484,  0.68173,  0.03199, 0.73007])
     print(rot.as_euler('xyz', degrees=True))
     """
+    # number of figures to round to, otherwise we get floating point errors
+    sig_figs = 10
+
     # roll (x-axis rotation)
     sinr_cosp = 2.0 * (w * x + y * z)
-    cosr_cosp = 1.0 - 2.0 * (x * x + y * y)
+    cosr_cosp = np.round(1.0 - 2.0 * (x * x + y * y), decimals=sig_figs) + 0  # add 0 to convert -0.0 to 0.0
     roll = np.arctan2(sinr_cosp, cosr_cosp)
 
     # pitch (y-axis rotation)
@@ -28,7 +31,7 @@ def euler_from_quaternions(w, x, y, z):
 
     # yaw (z-axis rotation)
     siny_cosp = 2.0 * (w * z + x * y)
-    cosy_cosp = 1.0 - 2.0 * (y * y + z * z)
+    cosy_cosp = np.round(1.0 - 2.0 * (y * y + z * z), decimals=sig_figs) + 0
     # this gives us angles in the range -180, 180
     yaw = np.arctan2(siny_cosp, cosy_cosp)
 
@@ -122,7 +125,7 @@ def vkx_df(log, source):
     df = pd.DataFrame(pvo_results, columns=["UTC", "lat", "lon", "sog", "cog", "alt", "Q_w", "Q_x", "Q_y", "Q_z"])
 
     # calculate the euler angles from the quaternions
-    euler_angles = euler_from_quaternions(df["Q_w"], df["Q_x"], df["Q_y"], df["Q_z"])
+    euler_angles = quatern2euler(df["Q_w"], df["Q_x"], df["Q_y"], df["Q_z"])
     df = df.assign(hdg=euler_angles[2], roll=euler_angles[0], pitch=euler_angles[1])
     df = df.drop(columns=["Q_w", "Q_x", "Q_y", "Q_z"])
     log.debug(f"Created DataFrame from VKX file: {source}")
