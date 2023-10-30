@@ -1,16 +1,16 @@
 import os
 import pathlib
+
 import click
 
 # Common modules
 from cracctracc import __version__
 from cracctracc.common import cracclog as clog
 
-
 # Submodules
-from cracctracc.modules import visualiser as vis
 from cracctracc.modules import manoeuvres as mano
 from cracctracc.modules import parser
+from cracctracc.modules import visualiser as vis
 
 
 # Setup click

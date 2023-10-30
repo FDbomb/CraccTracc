@@ -1,8 +1,9 @@
 # Module to parse VKX files and perform some calculations
 
-import pandas as pd
-import numpy as np
 import struct
+
+import numpy as np
+import pandas as pd
 
 
 def quatern2euler(w, x, y, z):

@@ -1,11 +1,11 @@
 # Module to parse GPX files and perform some calculations
 
 import xml.etree.ElementTree as ET
+from datetime import datetime
+
+import numpy as np
 import pandas as pd
 from geographiclib.geodesic import Geodesic
-
-from datetime import datetime
-import numpy as np
 
 
 def calc_distance(log, lat1, lon1, lat2, lon2):

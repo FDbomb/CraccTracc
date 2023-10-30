@@ -2,8 +2,8 @@
 # Input: pandas dataframe w/ time, speed, heading
 # Output: dataframe w/ type of manoeuvre, time of manoeuvre, length of manoeuvre
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 
 def hdg2twa(hdg, twd):

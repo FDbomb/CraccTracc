@@ -34,9 +34,9 @@ def fix_rounding(log, df):
     sig_figs = 4
     df["sog"] = df["sog"].round(sig_figs)
 
-    # VKX has extra columns
-    if "alt" in df:
-        df["alt"] = df["alt"].round(sig_figs)
+    # VKX has extra columns -  leave this here for now, will parse GPX elevation at some point
+    # if "alt" in df:
+    #     df["alt"] = df["alt"].round(sig_figs)
 
     return df
 
