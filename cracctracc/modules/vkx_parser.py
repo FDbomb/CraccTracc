@@ -47,7 +47,7 @@ def unpack_vkx(log, source):
         int("02", 16): struct.Struct("<Qii7f"),  # Position, Velocity, and Orientation
         int("03", 16): struct.Struct("<Qfii"),  # Declination
         int("04", 16): struct.Struct("<QBi"),  # Race Timer Event
-        int("05", 16): struct.Struct("<QBii"),  # Line Position - not right lat and long when tested!!!
+        int("05", 16): struct.Struct("<QBii"),  # Line Position - not right lat and lon when tested!!!
         int("06", 16): struct.Struct("<QBBff"),  # Shift Angle
         int("08", 16): struct.Struct("<Q4xB"),  # Device Configuration
         int("0A", 16): struct.Struct("<Qff"),  # Wind Data
@@ -105,9 +105,9 @@ def unpack_vkx(log, source):
             # unpack the data using the format string
             data = format_string.unpack(f.read(format_string.size))
 
-            # testing - Shift Angle data?
+            # TODO: remove this - just testing
             if row_key == int("05", 16):
-                log.debug((hex(row_key), data))
+                log.debug(f"TESTING: {hex(row_key)} - {data}")
 
             # add the unpacked data to the result list
             if row_key == int("02", 16):
@@ -128,6 +128,6 @@ def vkx_df(log, source):
     euler_angles = quatern2euler(df["Q_w"], df["Q_x"], df["Q_y"], df["Q_z"])
     df = df.assign(hdg=euler_angles[2], roll=euler_angles[0], pitch=euler_angles[1])
     df = df.drop(columns=["Q_w", "Q_x", "Q_y", "Q_z"])
-    log.debug(f"Created DataFrame from VKX file: {source}")
 
+    log.debug(f"Created DataFrame from VKX file: {source}")
     return df

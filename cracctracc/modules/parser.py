@@ -8,10 +8,6 @@ from cracctracc.modules.vkx_parser import vkx_df
 # import numpy as np
 
 
-def create_df(log, source, df):
-    return df
-
-
 def sog2knots(log, df):
     # convert sog from m/s to knots
     df["sog"] = df["sog"] * 900 / 463
@@ -27,6 +23,20 @@ def add_twd(log, df, twd):
     #   Currently just setting it statically, see comments in manoeuvres>>fix_heading()
     df["twd"] = twd
     log.warning(f"TWD set statically at {twd} degrees!")
+
+    return df
+
+
+def fix_rounding(log, df):
+    # Vakaros have floating point errors so need to round, GPX has no such issue
+    # have chosen 4 decimal places, breaks with 5!
+
+    sig_figs = 4
+    df["sog"] = df["sog"].round(sig_figs)
+
+    # VKX has extra columns
+    if "alt" in df:
+        df["alt"] = df["alt"].round(sig_figs)
 
     return df
 
@@ -47,11 +57,8 @@ def parse(log, source, source_ext):
     # add true wind
     df = add_twd(log, df, 150)  # TWD set statically here!!
 
+    # fix rounding errors
+    df = fix_rounding(log, df)
+
     # return df ready for manouvers
-    return df
-
-
-def test(log):
-    df = create_df(log, "data/Sutech-Atlas2 10-21-2023.vkx")
-
     return df

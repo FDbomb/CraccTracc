@@ -30,29 +30,19 @@ class RaceData:
 
         """
         self.data format
-            # given data
             time (UNIX milisecs)
             lat (32 bit int, 10^-7 deg)
             lon (32 bit int, 10^-7 deg)
             cog (deg -180, 180)
             sog (m/s or knots?)
 
-            # calculated data, needed
             twd (deg to true north, 0, 360)
-            tws (m/s or knots?)
-
             twa (deg from now, -180, 180)
 
-            # calculate data, needed or no?
-            time_delta (s)
+        vkx data extras
             hdg (deg to true north, 0, 360)
             roll (deg)
             pitch (deg)
-
-            # uneeded data
-            altitude (m)
-            distance (m)
-
         """
 
         self.manoeuvres = pd.DataFrame()  # Manoeuvres
