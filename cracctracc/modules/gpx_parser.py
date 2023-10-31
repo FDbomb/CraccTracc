@@ -9,9 +9,7 @@ from geographiclib.geodesic import Geodesic
 
 
 def calc_distance(log, lat1, lon1, lat2, lon2):
-    # convert lat long inputs to float (yes this sucks but idk what to do) using list comprehension
-    # lat1, lon1, lat2, lon2 = [float(x) for x in [lat1, lon1, lat2, lon2]]
-    # currently not using this as already floats
+    # lat long inputs need to be floats for geographiclib
 
     # use WGS-84 ellipsoid = most globally accurate. Accurate to round-off and always converges
     g = Geodesic.WGS84.Inverse(lat1, lon1, lat2, lon2)
@@ -25,7 +23,6 @@ def calc_distance(log, lat1, lon1, lat2, lon2):
 def calc_sog_cog(log, df):
     # calculate time delta between points, and add to the dataframe
     df["delta"] = df["time"].diff().fillna(0) / 1000
-    # NOTE DT: df["delta"] = delta.dt.total_seconds()
 
     # use list comprehension to efficiently get lat/long data
     result = [
@@ -48,14 +45,11 @@ def unpack_gpx(log, source):
     tree = ET.parse(source)
     root = tree.getroot()
 
-    # debug
-    # import pdb
-    # pdb.set_trace()
-
     # create list to append data to, use this to build dataframe later
     gps_data = []
 
-    # populate df with data from GPX file (could calculate speed here for quicker execution, but worse readability)
+    # populate df with data from GPX file
+    # could calculate speed here for quicker execution if needed, but worse readability
     target_tag = "{http://www.topografix.com/GPX/1/1}trkpt"  # namespace - {http://www.topografix.com/GPX/1/1'}
     for point in root.iter(target_tag):
         # point = <Element '{http://www.topografix.com/GPX/1/1}trkpt' at 0x11c3ec7c8>
@@ -71,24 +65,21 @@ def unpack_gpx(log, source):
         lat = np.float128(point.attrib["lat"])
         lon = np.float128(point.attrib["lon"])
 
-        gps_data.append([time, lat, lon])
         # significant speed gains appending to list vs appending to dataframe (1.5s vs 25s)
+        gps_data.append([time, lat, lon])
 
-    # make Pandas df to store data
-    df = pd.DataFrame(gps_data, columns=["time", "lat", "lon"])
-    log.debug(f"{len(df)} trackpoints recorded")
-
-    return df
+    return gps_data
 
 
 def gpx_df(log, source):
     # make df from GPX data
-    df = unpack_gpx(log, source)
+    gps_data = unpack_gpx(log, source)
+    df = pd.DataFrame(gps_data, columns=["time", "lat", "lon"])
 
     # calculate sog and cog
     df = calc_sog_cog(log, df)
 
-    # TODO: clear this out
+    # TODO: clear this out eventually, for GPX data will just have basic analysis
     #   this is just to make GPX data look like VKX data for now
     df["hdg"] = df["cog"]
 

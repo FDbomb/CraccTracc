@@ -3,10 +3,6 @@
 from cracctracc.modules.gpx_parser import gpx_df
 from cracctracc.modules.vkx_parser import vkx_df
 
-# import pandas as pd
-# from datetime import datetime
-# import numpy as np
-
 
 def sog2knots(log, df):
     # convert sog from m/s to knots
@@ -29,14 +25,15 @@ def add_twd(log, df, twd):
 
 def fix_rounding(log, df):
     # Vakaros have floating point errors so need to round, GPX has no such issue
-    # have chosen 4 decimal places, breaks with 5!
+    # have chosen 4 decimal places as breaks with 5!
 
     sig_figs = 4
-    df["sog"] = df["sog"].round(sig_figs)
+    df[["sog", "cog", "hdg"]] = df[["sog", "cog", "hdg"]].round(sig_figs)
 
-    # VKX has extra columns -  leave this here for now, will parse GPX elevation at some point
-    # if "alt" in df:
-    #     df["alt"] = df["alt"].round(sig_figs)
+    # VKX has extra columns - leave this here for now, will parse GPX elevation at some point
+    if "alt" in df:
+        df["alt"] = df["alt"].round(1)
+        df[["roll", "pitch"]] = df[["roll", "pitch"]].round(sig_figs)
 
     return df
 
@@ -50,8 +47,12 @@ def parse(log, source, source_ext):
     elif source_ext == ".vkx":
         df = vkx_df(log, source)
 
+    n = len(df)
+
+    # log the successful creation of the df
+    log.debug(f"{n} trackpoints recorded from {source}")
+
     # add speed, convert to deg etc
-    # NOTE: drop first row of all formats to remove NaNs from diffs/shifting
     df = sog2knots(log, df)
 
     # add true wind
@@ -60,5 +61,8 @@ def parse(log, source, source_ext):
     # fix rounding errors
     df = fix_rounding(log, df)
 
-    # return df ready for manouvers
+    # remove first row if GPX to remove NaNs
+    if source_ext == ".gpx":
+        df = df.loc[1:]
+
     return df

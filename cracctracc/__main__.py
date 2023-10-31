@@ -37,18 +37,10 @@ def main(gpx_track_file, debug, output_csv, output_pkl):
     source_head, source_tail = os.path.split(source_base)
     log.debug(f"Using {source} as input data")
 
-    # save df from GPX data
+    # save df from GPX or VKX data
     df = parser.parse(log, source, source_ext)
-    # df = gpx.create_df(log, source)
 
-    # add speed
-    # df = parser.add_speed(log, df)
-
-    # add true wind angle
-    # df = gpx.add_twa(log, df, 150)  # TWA set statically here as arg#3
-
-    df2 = df
-    df2 = mano.manoeuvres(log, df2)
+    df_man = mano.manoeuvres(log, df)
 
     # Save metrics for external analysis
     if output_csv or output_pkl:
@@ -65,7 +57,7 @@ def main(gpx_track_file, debug, output_csv, output_pkl):
             log.info(f"Exported metrics to {output_head}/{output_tail}.{output_ext}")
 
     vis.create_plot(log, df)
-    vis.create_plot3(log, df2)
+    vis.create_plot3(log, df_man)
 
     vis.show_plots(log)
 

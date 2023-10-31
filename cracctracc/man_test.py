@@ -4,7 +4,6 @@
 from cracctracc.common import cracclog as clog
 
 # Submodules
-# from cracctracc.modules import manoeuvres as mano
 from cracctracc.modules import parser
 
 
@@ -25,8 +24,8 @@ def main():
     # test
     df2 = parser.parse(log, "data/activity_7737592803.gpx", ".gpx")
     df3 = parser.parse(log, "data/Sutech-Atlas2 10-28-2023.vkx", ".vkx")
-    log.debug(f"\n{df2.loc[2000:2010]}")
-    log.debug(f"\n{df3.loc[20000:20010]}")
+    log.debug(f"\n{df2}")
+    log.debug(f"\n{df3}")
 
 
 if __name__ == "__main__":

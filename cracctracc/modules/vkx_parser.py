@@ -79,9 +79,9 @@ def unpack_vkx(log, source):
     """
 
     # create lists to append data to, use this to build dataframe later
-    pvo_results = []
-    race_results = []
-    wind_results = []
+    pvo_data = []
+    race_data = []
+    wind_data = []
 
     # TODO: can I unpack this so I dont have to keep the file open?
     #   ie data = f.read() and then next look read through data?
@@ -112,23 +112,26 @@ def unpack_vkx(log, source):
 
             # add the unpacked data to the result list
             if row_key == int("02", 16):
-                pvo_results.append(data)
+                pvo_data.append(data)
             elif row_key in [int("04", 16), int("05", 16), int("06", 16)]:
-                race_results.append(data)
+                race_data.append(data)
             elif row_key == int("0A", 16):
-                wind_results.append(data)
+                wind_data.append(data)
 
-    return pvo_results, race_results, wind_results
+    return pvo_data, race_data, wind_data
 
 
 def vkx_df(log, source):
-    pvo_results, race_results, wind_results = unpack_vkx(log, source)
-    df = pd.DataFrame(pvo_results, columns=["UTC", "lat", "lon", "sog", "cog", "alt", "Q_w", "Q_x", "Q_y", "Q_z"])
+    # make df from VKX data
+    pvo_data, race_data, wind_data = unpack_vkx(log, source)
+    df = pd.DataFrame(pvo_data, columns=["UTC", "lat", "lon", "sog", "cog", "alt", "Q_w", "Q_x", "Q_y", "Q_z"])
 
     # calculate the euler angles from the quaternions
     euler_angles = quatern2euler(df["Q_w"], df["Q_x"], df["Q_y"], df["Q_z"])
     df = df.assign(hdg=euler_angles[2], roll=euler_angles[0], pitch=euler_angles[1])
     df = df.drop(columns=["Q_w", "Q_x", "Q_y", "Q_z"])
 
-    log.debug(f"Created DataFrame from VKX file: {source}")
+    # convert cog to degrees
+    df["cog"] = np.rad2deg(df["cog"])
+
     return df
