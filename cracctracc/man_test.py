@@ -12,7 +12,7 @@ def main():
     log = clog.init_logger(True)
 
     # test parsing, manoeuvers, and manoeuvers analysis on gpx data
-    # gpx = parser.parse(log, "data/activity_7737592803.gpx", ".gpx", race_start=1635557400000)
+    # gpx = parser.parse(log, "data/activity_7737592803.gpx", ".gpx", twd=150, race_start=1635557400000)
     # gp = 200
     # print(gpx.loc[gp : gp + 50])
     # gpx = mano.manoeuvres(log, gpx)
@@ -21,16 +21,19 @@ def main():
     # print(gpx_mano[0:50])
 
     # test parsing, manoeuvers, and manoeuvers analysis on vkx data
-    vkx = parser.parse(log, "data/Sutech-Atlas2 10-21-2023.vkx", ".vkx", race_end=1697862585000)
-    # here we have manually found this race end time from the 16s website
-    # extracted race end time is 1697863367232
+    # vkx = parser.parse(log, "data/Sutech-Atlas2 10-21-2023.vkx", ".vkx", twd=34, race_end=1697862585000)
+    # vkx race end time of 1697863367232 is wrong so found this race end time from the 16s website, vkx start is right
+
+    vkx = parser.parse(log, "data/Sutech-Atlas2 10-28-2023.vkx", ".vkx", twd=60, race_end=1698473822000)
+    # again manually found this race end time from the 16s website, start time is in the vkx file
     vkx = mano.manoeuvres(log, vkx)
     # vk = 29900
     # print(vkx.loc[vk : vk + 50])
     vkx_mano = mano.manoeuvres_analysis(log, vkx)
     print(len(vkx_mano))
+    vkk = 150
     print(vkx_mano[0:50])
-    print(vkx_mano[50:100])
+    print(vkx_mano[vkk - 25 : vkk + 25])
 
 
 if __name__ == "__main__":

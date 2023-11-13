@@ -38,7 +38,7 @@ def main(gpx_track_file, debug, output_csv, output_pkl):
     log.debug(f"Using {source} as input data")
 
     # save df from GPX or VKX data
-    df = parser.parse(log, source, source_ext)
+    df = parser.parse(log, source, source_ext, twd=0)
 
     df_man = mano.manoeuvres(log, df)
 

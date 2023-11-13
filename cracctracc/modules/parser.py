@@ -80,14 +80,14 @@ def trim_race(log, df, course_data, race_start, race_end):
         # TODO: insert logic to find end here
     elif vkx_race_start != 0:
         # in this case we have both start and end times either extracted or given
-        log.debug("Extracted race start and end times")
+        log.debug(f"Extracted race start and end times - [{race_start}, {race_end}]")
 
     # TODO: make this function return the whole df as well as the trimmed df!
     race_df = df[df["UTC"].between(race_start, race_end)]
     return race_df
 
 
-def parse(log, source, source_ext, race_start=None, race_end=None):
+def parse(log, source: str, source_ext: str, twd: int = None, race_start: int = None, race_end: int = None):
     # MAIN SUPPORT FOR VKX!!!!!
 
     log.debug(f"Attempting to extract data from {source}")
@@ -105,14 +105,8 @@ def parse(log, source, source_ext, race_start=None, race_end=None):
     # add speed, convert to deg etc
     df = sog2knots(log, df)
 
-    # TODO: remove this section once true wind module is written
-    if source_ext == ".gpx":
-        twd = 150
-    elif source_ext == ".vkx":
-        twd = 33.75  # shifts between 22.5 and 45 degrees
-
     # add true wind
-    df = add_twd(log, df, twd)  # TWD set statically here!!
+    df = add_twd(log, df, twd)  # TWD set statically here!! Need to write module for this
 
     # fix rounding errors
     df = fix_rounding(log, df)
@@ -125,6 +119,7 @@ def parse(log, source, source_ext, race_start=None, race_end=None):
     if "course_data" in locals():
         # check that input start/end times are unix miliseconds format
         # they can still be right format but wrong values so more checks would be better
+        # in particular, check that they are within the time range of the data otherwise no data returned
         if race_start and len(str(race_start)) != 13:
             raise ValueError("Race start time must be in UNIX miliseconds")
         if race_end and len(str(race_end)) != 13:
