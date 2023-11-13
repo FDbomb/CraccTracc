@@ -11,6 +11,7 @@ from cracctracc.common import cracclog as clog
 from cracctracc.modules import manoeuvres as mano
 from cracctracc.modules import parser
 from cracctracc.modules import visualiser as vis
+from cracctracc.modules import wind
 
 
 # Setup click
@@ -38,7 +39,10 @@ def main(gpx_track_file, debug, output_csv, output_pkl):
     log.debug(f"Using {source} as input data")
 
     # save df from GPX or VKX data
-    df = parser.parse(log, source, source_ext, twd=0)
+    df = parser.parse(log, source, source_ext)
+
+    # add twd to df
+    df = wind.add_twd(log, df, twd=0)
 
     df_man = mano.manoeuvres(log, df)
 

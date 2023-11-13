@@ -5,7 +5,7 @@ from cracctracc.common import cracclog as clog
 
 # Submodules
 from cracctracc.modules import manoeuvres as mano
-from cracctracc.modules import parser
+from cracctracc.modules import parser, wind
 
 
 def main():
@@ -24,7 +24,8 @@ def main():
     # vkx = parser.parse(log, "data/Sutech-Atlas2 10-21-2023.vkx", ".vkx", twd=34, race_end=1697862585000)
     # vkx race end time of 1697863367232 is wrong so found this race end time from the 16s website, vkx start is right
 
-    vkx = parser.parse(log, "data/Sutech-Atlas2 10-28-2023.vkx", ".vkx", twd=60, race_end=1698473822000)
+    vkx = parser.parse(log, "data/Sutech-Atlas2 10-28-2023.vkx", ".vkx", race_end=1698473822000)
+    vkx = wind.add_twd(log, vkx, twd=60)
     # again manually found this race end time from the 16s website, start time is in the vkx file
     vkx = mano.manoeuvres(log, vkx)
     # vk = 29900

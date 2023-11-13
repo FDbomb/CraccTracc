@@ -11,18 +11,6 @@ def sog2knots(log, df):
     return df
 
 
-def add_twd(log, df, twd):
-    """Add TWD to a dataframe."""
-    # TODO: FIX THIS ASAP, IT'S A BIG PROBLEM
-    #   this function really needs its whole own module. Either needs to be added from VKX file
-    #   or calculated somehow from GPX file. Even maybe pull data from BOM is closer?
-    #   Currently just setting it statically, see comments in manoeuvres>>fix_heading()
-    df["twd"] = twd
-    log.warning(f"TWD set statically at {twd} degrees!")
-
-    return df
-
-
 def fix_rounding(log, df):
     # Vakaros have floating point errors so need to round, GPX has no such issue
     # have chosen 4 decimal places as breaks with 5!
@@ -104,9 +92,6 @@ def parse(log, source: str, source_ext: str, twd: int = None, race_start: int = 
 
     # add speed, convert to deg etc
     df = sog2knots(log, df)
-
-    # add true wind
-    df = add_twd(log, df, twd)  # TWD set statically here!! Need to write module for this
 
     # fix rounding errors
     df = fix_rounding(log, df)
