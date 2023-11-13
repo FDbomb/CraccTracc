@@ -79,9 +79,8 @@ def unpack_vkx(log, source):
     """
 
     # create lists to append data to, use this to build dataframe later
-    pvo_data = []
-    race_data = []
-    wind_data = []
+    gps_data = []
+    course_data = {}
 
     # TODO: can I unpack this so I dont have to keep the file open?
     #   ie data = f.read() and then next look read through data?
@@ -106,25 +105,26 @@ def unpack_vkx(log, source):
             # unpack the data using the format string
             data = format_string.unpack(f.read(format_string.size))
 
-            # TODO: remove this - just testing
-            if row_key == int("05", 16):
-                log.debug(f"TESTING: {hex(row_key)} - {data}")
+            # TESTING: use this to print certain packages to the debug log
+            # if row_key == int("04", 16):
+            #     log.debug(f"Package {hex(row_key)} - {data}")
 
             # add the unpacked data to the result list
             if row_key == int("02", 16):
-                pvo_data.append(data)
-            elif row_key in [int("04", 16), int("05", 16), int("06", 16)]:
-                race_data.append(data)
-            elif row_key == int("0A", 16):
-                wind_data.append(data)
+                gps_data.append(data)
+            # other data (Race Timer, Line Position, Shift Angle, Wind Data) is stored in a dict
+            elif row_key in [4, 5, 6, 10]:
+                if row_key not in course_data:
+                    course_data[row_key] = []
+                course_data[row_key].append(data)
 
-    return pvo_data, race_data, wind_data
+    return gps_data, course_data
 
 
 def vkx_df(log, source):
     # make df from VKX data
-    pvo_data, race_data, wind_data = unpack_vkx(log, source)
-    df = pd.DataFrame(pvo_data, columns=["UTC", "lat", "lon", "sog", "cog", "alt", "Q_w", "Q_x", "Q_y", "Q_z"])
+    gps_data, course_data = unpack_vkx(log, source)
+    df = pd.DataFrame(gps_data, columns=["UTC", "lat", "lon", "sog", "cog", "alt", "Q_w", "Q_x", "Q_y", "Q_z"])
 
     # calculate the euler angles from the quaternions
     euler_angles = quatern2euler(df["Q_w"], df["Q_x"], df["Q_y"], df["Q_z"])
@@ -134,4 +134,4 @@ def vkx_df(log, source):
     # convert cog to degrees
     df["cog"] = np.rad2deg(df["cog"])
 
-    return df
+    return df, course_data

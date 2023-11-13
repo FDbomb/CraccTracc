@@ -5,29 +5,49 @@ from datetime import datetime
 import pandas as pd
 
 
-class Race:
-    def __init__(self, name, start_time, start_line, marks):
-        self.name = name
-        self.start_time = start_time
-        self.start_line = start_line
-        self.marks = marks
-
-        self.entry_list = []
-
-
 class Boat:
+    _id = 0
+
     def __init__(self, name):
+        self.id = Boat._id
+        Boat._id += 1
+
         self.name = name
 
         self.races_list = []
 
 
-class RaceData:
-    def __init__(self, sample_rate, data):
-        # self.data_format = format  # "csv, gpx", "vkx"  # think not relevant
+class Race:
+    _id = 0
 
+    def __init__(self, name, race_start, start_line, marks):
+        self.id = Race._id
+        Race._id += 1
+
+        self.name = name
+        self.race_start = race_start
+        self.start_line = start_line
+        self.marks = marks
+
+        self.entry_list = []
+        self.race_datas = []
+
+
+class RaceData:
+    _id = 0
+
+    def __init__(self, boat, sample_rate, data):
+        self.id = RaceData._id
+        RaceData._id += 1
+
+        # self.data_format = format  # "csv, gpx", "vkx"  # think not relevant
         self.data_sample_rate = sample_rate  # Hz
+
+        self.boat = boat
+
         self.data = data  # Proccessed data containing state variables
+
+        self.legs = []  # save start and end time for legs + labels?
 
         """
         self.data format
@@ -57,11 +77,11 @@ class RaceData:
 
 # SAMPLE USAGE!
 def sample_usage():
-    # create a Race instance
-    race1 = Race("Race 1", datetime.now(), [[0, 0], [1, 1]], [[75, 75], [25, 25]])
-
     # create a Boat instance
     boat1 = Boat("Boat 1")
+
+    # create a Race instance
+    race1 = Race("Race 1", datetime.now(), [[0, 0], [1, 1]], [[75, 75], [25, 25]])
 
     # create a RaceData instance
     gps_data1 = []
