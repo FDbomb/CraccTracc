@@ -22,7 +22,7 @@ def calc_distance(log, lat1, lon1, lat2, lon2):
 
 def calc_sog_cog(log, df):
     # calculate time delta between points, and add to the dataframe
-    df["delta"] = df["time"].diff().fillna(0) / 1000
+    df["delta"] = df["UTC"].diff().fillna(0) / 1000
 
     # use list comprehension to efficiently get lat/long data
     result = [
@@ -74,7 +74,7 @@ def unpack_gpx(log, source):
 def gpx_df(log, source):
     # make df from GPX data
     gps_data = unpack_gpx(log, source)
-    df = pd.DataFrame(gps_data, columns=["time", "lat", "lon"])
+    df = pd.DataFrame(gps_data, columns=["UTC", "lat", "lon"])
 
     # calculate sog and cog
     df = calc_sog_cog(log, df)

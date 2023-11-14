@@ -60,8 +60,8 @@ def main(gpx_track_file, debug, output_csv, output_pkl):
             df.to_pickle(f"{output_head}/{output_tail}.{output_ext}")
             log.info(f"Exported metrics to {output_head}/{output_tail}.{output_ext}")
 
-    vis.create_plot(log, df)
-    vis.create_plot3(log, df_man)
+    vis.plot(log, df_man, "twd")
+    vis.dashboard(log, df)
 
     vis.show_plots(log)
 

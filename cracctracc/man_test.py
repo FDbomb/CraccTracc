@@ -5,7 +5,7 @@ from cracctracc.common import cracclog as clog
 
 # Submodules
 from cracctracc.modules import manoeuvres as mano
-from cracctracc.modules import parser, wind
+from cracctracc.modules import parser, visualiser, wind
 
 
 def main():
@@ -30,11 +30,15 @@ def main():
     vkx = mano.manoeuvres(log, vkx)
     # vk = 29900
     # print(vkx.loc[vk : vk + 50])
-    vkx_mano = mano.manoeuvres_analysis(log, vkx)
-    print(len(vkx_mano))
-    vkk = 150
-    print(vkx_mano[0:50])
-    print(vkx_mano[vkk - 25 : vkk + 25])
+    # vkx_mano = mano.manoeuvres_analysis(log, vkx)
+    # print(len(vkx_mano))
+    # vkk = 150
+    # print(vkx_mano[0:50])
+    # print(vkx_mano[vkk - 25 : vkk + 25])
+
+    # test visualiser
+    visualiser.true_wind(log, vkx)
+    visualiser.show_plots(log)
 
 
 if __name__ == "__main__":
