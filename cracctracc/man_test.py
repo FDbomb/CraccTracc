@@ -25,11 +25,14 @@ def main():
     # vkx race end time of 1697863367232 is wrong so found this race end time from the 16s website, vkx start is right
 
     vkx = parser.parse(log, "data/Sutech-Atlas2 10-28-2023.vkx", ".vkx", race_end=1698473822000)
-    vkx = wind.add_twd(log, vkx, twd=60)
     # again manually found this race end time from the 16s website, start time is in the vkx file
+    vkx = wind.add_twd(log, vkx)
     vkx = mano.manoeuvres(log, vkx)
-    # vk = 29900
-    # print(vkx.loc[vk : vk + 50])
+
+    vk = 1000  # 29900
+    print(vkx.iloc[vk : vk + 50])
+    # 80 degrees wind seems to be gucci off the start - maybe set manually
+
     # vkx_mano = mano.manoeuvres_analysis(log, vkx)
     # print(len(vkx_mano))
     # vkk = 150
@@ -37,8 +40,8 @@ def main():
     # print(vkx_mano[vkk - 25 : vkk + 25])
 
     # test visualiser
-    visualiser.true_wind(log, vkx)
-    visualiser.show_plots(log)
+    # visualiser.true_wind(log, vkx)
+    # visualiser.show_plots(log)
 
 
 if __name__ == "__main__":
