@@ -75,16 +75,26 @@ def trim_race(log, df, course_data, race_start, race_end):
     return race_df
 
 
-def parse(log, source: str, source_ext: str, twd: int = None, race_start: int = None, race_end: int = None):
+def parse(
+    log,
+    source: str,
+    source_ext: str,
+    twd: int | None = None,
+    race_start: int | None = None,
+    race_end: int | None = None,
+):
     # MAIN SUPPORT FOR VKX!!!!!
 
     log.debug(f"Attempting to extract data from {source}")
 
     # parser based on source file type
+    course_data = None
     if source_ext == ".gpx":
         df = gpx_df(log, source)
     elif source_ext == ".vkx":
         df, course_data = vkx_df(log, source)
+    else:
+        raise ValueError(f"File type {source_ext} not supported")
 
     # log the successful creation of the df
     n = len(df)
@@ -101,7 +111,7 @@ def parse(log, source: str, source_ext: str, twd: int = None, race_start: int = 
         df = df.loc[1:]
 
     # check if course_data exists
-    if "course_data" in locals():
+    if course_data is not None:
         # check that input start/end times are unix miliseconds format
         # they can still be right format but wrong values so more checks would be better
         # in particular, check that they are within the time range of the data otherwise no data returned
