@@ -11,6 +11,7 @@ from cracctracc.common import cracclog as clog
 from cracctracc.modules import manoeuvres as mano
 from cracctracc.modules import parser
 from cracctracc.modules import visualiser as vis
+from cracctracc.modules import wind
 
 
 # Setup click
@@ -38,7 +39,10 @@ def main(gpx_track_file, debug, output_csv, output_pkl):
     log.debug(f"Using {source} as input data")
 
     # save df from GPX or VKX data
-    df = parser.parse(log, source, source_ext, twd=0)
+    df = parser.parse(log, source, source_ext)
+
+    # add twd to df
+    df = wind.add_twd(log, df, twd=0)
 
     df_man = mano.manoeuvres(log, df)
 
@@ -56,8 +60,8 @@ def main(gpx_track_file, debug, output_csv, output_pkl):
             df.to_pickle(f"{output_head}/{output_tail}.{output_ext}")
             log.info(f"Exported metrics to {output_head}/{output_tail}.{output_ext}")
 
-    vis.create_plot(log, df)
-    vis.create_plot3(log, df_man)
+    vis.plot(log, df_man, "twd")
+    vis.dashboard(log, df)
 
     vis.show_plots(log)
 

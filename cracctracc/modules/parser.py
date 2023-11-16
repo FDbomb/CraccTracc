@@ -11,18 +11,6 @@ def sog2knots(log, df):
     return df
 
 
-def add_twd(log, df, twd):
-    """Add TWD to a dataframe."""
-    # TODO: FIX THIS ASAP, IT'S A BIG PROBLEM
-    #   this function really needs its whole own module. Either needs to be added from VKX file
-    #   or calculated somehow from GPX file. Even maybe pull data from BOM is closer?
-    #   Currently just setting it statically, see comments in manoeuvres>>fix_heading()
-    df["twd"] = twd
-    log.warning(f"TWD set statically at {twd} degrees!")
-
-    return df
-
-
 def fix_rounding(log, df):
     # Vakaros have floating point errors so need to round, GPX has no such issue
     # have chosen 4 decimal places as breaks with 5!
@@ -87,16 +75,26 @@ def trim_race(log, df, course_data, race_start, race_end):
     return race_df
 
 
-def parse(log, source: str, source_ext: str, twd: int = None, race_start: int = None, race_end: int = None):
+def parse(
+    log,
+    source: str,
+    source_ext: str,
+    twd: int | None = None,
+    race_start: int | None = None,
+    race_end: int | None = None,
+):
     # MAIN SUPPORT FOR VKX!!!!!
 
     log.debug(f"Attempting to extract data from {source}")
 
     # parser based on source file type
+    course_data = None
     if source_ext == ".gpx":
         df = gpx_df(log, source)
     elif source_ext == ".vkx":
         df, course_data = vkx_df(log, source)
+    else:
+        raise ValueError(f"File type {source_ext} not supported")
 
     # log the successful creation of the df
     n = len(df)
@@ -104,9 +102,6 @@ def parse(log, source: str, source_ext: str, twd: int = None, race_start: int = 
 
     # add speed, convert to deg etc
     df = sog2knots(log, df)
-
-    # add true wind
-    df = add_twd(log, df, twd)  # TWD set statically here!! Need to write module for this
 
     # fix rounding errors
     df = fix_rounding(log, df)
@@ -116,7 +111,7 @@ def parse(log, source: str, source_ext: str, twd: int = None, race_start: int = 
         df = df.loc[1:]
 
     # check if course_data exists
-    if "course_data" in locals():
+    if course_data is not None:
         # check that input start/end times are unix miliseconds format
         # they can still be right format but wrong values so more checks would be better
         # in particular, check that they are within the time range of the data otherwise no data returned
