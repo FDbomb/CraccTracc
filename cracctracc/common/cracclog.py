@@ -3,7 +3,7 @@
 import logging
 
 
-def init_logger(debug_flag):
+def init_logger(debug_flag: bool) -> logging.Logger:
     log = logging.getLogger(__name__)
     console_handler = logging.StreamHandler()
     if debug_flag:

@@ -2,18 +2,20 @@
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, NamedTuple
 from urllib.request import urlopen
 
-import matplotlib.pyplot as plt
 import numpy as np
 
 # if we need to do more complex requests, use the 3rd party requests module
 
 if TYPE_CHECKING:
-    import logging
+    from logging import Logger
 
     import pandas as pd
+    from numpy.typing import NDArray
+
+    # from numpy.typing import NDArray
 
 # PLAN #
 # [x] one function to add fixed wind data
@@ -21,7 +23,15 @@ if TYPE_CHECKING:
 # [ ] one function to estimate wind data (using the above function as input)
 
 
-def angular_interpolation(x: np.ndarray, xp: np.ndarray, fp: np.ndarray, period: float = 360) -> np.ndarray:
+class WindPoint(NamedTuple):
+    time: int
+    tws: float
+    twd: int
+
+
+def angular_interpolation(
+    x: NDArray[np.int_], xp: NDArray[np.int_], fp: NDArray[np.int_ | np.float_], period: float = 360
+) -> NDArray[Any]:
     """
     One dimensional linear interpolation for monotonically increasing sample points where points first are unwrapped,
     secondly interpolated and finally bounded within the specified period.
@@ -48,15 +58,15 @@ def angular_interpolation(x: np.ndarray, xp: np.ndarray, fp: np.ndarray, period:
     return interp_vals
 
 
-def get_wind_data(log: logging.Logger, date: str) -> dict:
-    """Get wind data from WillyWeather for a given date.
+def get_wind_data(log: Logger, date: str) -> dict[Any, Any]:
+    """Get wind data from WillyWeather for a given date. NOTE: this will break if Willy Weather update anything.
 
     Args:
         log (logging.Logger): Logger to log to.
         date (str): Date to get wind data for in the format "YYYY-MM-DD".
 
     Returns:
-        dict: Wind data for the given date.
+        dict: Wind data for the given date in the format of Willy Weather.
 
     Raises:
         None
@@ -99,7 +109,7 @@ def get_wind_data(log: logging.Logger, date: str) -> dict:
     return data
 
 
-def filter_wind_data(log: logging.Logger, df: pd.DataFrame, resp_data: dict) -> list[tuple[int, float, int]]:
+def filter_wind_data(log: Logger, df: pd.DataFrame, resp_data: dict[Any, Any]) -> list[WindPoint]:
     """Filter wind data from WillyWeather to only include the wind speed and direction.
 
     Args:
@@ -129,22 +139,25 @@ def filter_wind_data(log: logging.Logger, df: pd.DataFrame, resp_data: dict) -> 
     """ TODO: BIG DISCLAIMER: not sure how this will work with daylight savings. Should be fine."""
     timezone_offset = 1 * 60 * 60 * 11  # 11 hours in seconds
 
-    wind_data = []
-    for point in resp_data:
-        # point = { x: unix seconds for AUS timezone, y: speed in m/s, direction: degrees, ...}
-        time = (point["x"] - timezone_offset) * 1000  # multipy by 1000 to convert to miliseconds
+    wind_data: list[WindPoint] = []
+    tws: float
+    for data_point in resp_data:
+        # data_point = { x: unix seconds for AUS timezone, y: speed in m/s, direction: degrees, ...}
 
+        time = (data_point["x"] - timezone_offset) * 1000  # multipy by 1000 to convert to miliseconds
         if race_start <= time <= race_end:
-            tws = np.round(point["y"] / 1.852, 1)  # convert from km/h to knots and round
-            twd = point["direction"]
-            wind_data.append((time, tws, twd))
+            tws = np.round(data_point["y"] / 1.852, 1)  # convert from km/h to knots and round
+            twd = data_point["direction"]
+
+            wind_point = WindPoint(time, tws, twd)
+            wind_data.append(wind_point)
 
     # wind data = [(time, speed, direction), ...]
     log.debug(f"Filtered wind data to {len(wind_data)} points")
     return wind_data
 
 
-def fixed_twd(log: logging.Logger, df: pd.DataFrame, twd: int = 0) -> pd.DataFrame:
+def fixed_twd(log: Logger, df: pd.DataFrame, twd: int = 0) -> pd.DataFrame:
     """Add a fixed TWD to a dataframe. Least useful twd method for its bad accuracy."""
 
     df["twd"] = twd
@@ -153,7 +166,7 @@ def fixed_twd(log: logging.Logger, df: pd.DataFrame, twd: int = 0) -> pd.DataFra
     return df
 
 
-def bom_twd(log: logging.Logger, df: pd.DataFrame) -> pd.DataFrame:
+def bom_twd(log: Logger, df: pd.DataFrame) -> pd.DataFrame:
     """Add TWD to a dataframe from WillyWeather/OpenWeatherMap data."""
 
     # get start time and end time
@@ -166,14 +179,14 @@ def bom_twd(log: logging.Logger, df: pd.DataFrame) -> pd.DataFrame:
     # TODO: decide on interval
 
     # interpolate wind direction for each point in df
-    x = df["UTC"].to_numpy()
-    xp = np.array([point[0] for point in wind_data])
-    fp = np.array([point[2] for point in wind_data])
+    x: NDArray[np.int_] = df["UTC"].to_numpy()
+    xp: NDArray[np.int_] = np.array([wind_point.time for wind_point in wind_data])
+    fp: NDArray[np.int_] = np.array([wind_point.twd for wind_point in wind_data])
     df["twd"] = angular_interpolation(x, xp, fp, period=360)
 
     # interpolate wind speed for each point in df
-    fp = np.array([point[1] for point in wind_data])
-    df["tws"] = np.round(np.interp(x, xp, fp), 1)
+    fp2: NDArray[np.float_] = np.array([wind_point.tws for wind_point in wind_data])
+    df["tws"] = np.round(np.interp(x, xp, fp2), 1)
 
     """
     # TODO: remove this once properly tested
@@ -188,7 +201,7 @@ def bom_twd(log: logging.Logger, df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def estimated_twd(log: logging.Logger, df: pd.DataFrame) -> pd.DataFrame:
+def estimated_twd(log: Logger, df: pd.DataFrame) -> pd.DataFrame:
     # TODO: figure the logic for this function
     # using the bom twd and shift angles
     # try to calculate/estimate a closer approximation of true wind
@@ -201,7 +214,7 @@ def estimated_twd(log: logging.Logger, df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def add_twd(log: logging.Logger, df: pd.DataFrame, twd: int = 0) -> pd.DataFrame:
+def add_twd(log: Logger, df: pd.DataFrame, twd: int = 0) -> pd.DataFrame:
     # TODO: this should act as the main function and decide which twd method to call
     # right now just calls bom_method with hardcoded date
 

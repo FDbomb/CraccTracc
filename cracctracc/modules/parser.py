@@ -1,24 +1,32 @@
 # Module to parse GPX files and perform some calculations
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Optional
 
 from cracctracc.modules.gpx_parser import gpx_df
 from cracctracc.modules.vkx_parser import vkx_df
 
+if TYPE_CHECKING:
+    from logging import Logger
 
-def sog2knots(log, df):
+    import pandas as pd
+
+
+def ms2knots(log: Logger, df: pd.DataFrame) -> pd.DataFrame:
     # convert sog from m/s to knots
     df["sog"] = df["sog"] * 900 / 463
 
     return df
 
 
-def fix_rounding(log, df):
+def fix_rounding(log: Logger, df: pd.DataFrame) -> pd.DataFrame:
     # Vakaros have floating point errors so need to round, GPX has no such issue
     # have chosen 4 decimal places as breaks with 5!
 
     sig_figs = 4
     df[["sog", "cog", "hdg"]] = df[["sog", "cog", "hdg"]].round(sig_figs)
 
-    # VKX has extra columns - leave this here for now, will parse GPX elevation at some point
+    # TODO: VKX has extra columns - leave this here for now, will parse GPX elevation at some point
     if "alt" in df:
         df["alt"] = df["alt"].round(1)
         df[["roll", "pitch"]] = df[["roll", "pitch"]].round(sig_figs)
@@ -26,7 +34,13 @@ def fix_rounding(log, df):
     return df
 
 
-def trim_race(log, df, course_data, race_start, race_end):
+def trim_race(
+    log: Logger,
+    df: pd.DataFrame,
+    course_data: dict[int, Any],
+    race_start: int | None,
+    race_end: int | None,
+) -> pd.DataFrame:
     # Trim the race dataframe to the race only
     # race_start and race_end should be in UNIX miliseconds
     # The manually provided start and end times have priority, then extracted start and end times, and then the whole df
@@ -35,9 +49,11 @@ def trim_race(log, df, course_data, race_start, race_end):
     if race_start and race_end:
         # trim df to only include race data
         race_df = df[df["UTC"].between(race_start, race_end)]
+        return race_df
 
     # if we only have one of the start or end times, extract the other from the course data
     vkx_race_start, vkx_race_end = 0, len(df)
+    item: tuple[int, int, int]
     for item in course_data[4]:
         # unpack the race timer data into its components
         # if there are multiple race starts, this will only take the last one (as expected for general recalls)
@@ -46,7 +62,7 @@ def trim_race(log, df, course_data, race_start, race_end):
         CODE is 0: RESET, 1: START, 2: SYNC, 3: RACE START, 4: RACE END
         TIMER is race timer in seconds
         """
-        utc, code, timer = item
+        utc, code, _ = item
         if code == 3:
             vkx_race_start = utc
         elif code == 4:
@@ -57,6 +73,9 @@ def trim_race(log, df, course_data, race_start, race_end):
         race_start = vkx_race_start
     if race_end is None:
         race_end = vkx_race_end
+
+    # trim the race df
+    race_df = df[df["UTC"].between(race_start, race_end)]
 
     # if we no start time given or extracted, default to start of data
     if race_start == 0:
@@ -70,19 +89,17 @@ def trim_race(log, df, course_data, race_start, race_end):
         # in this case we have both start and end times either extracted or given
         log.debug(f"Extracted race start and end times - [{race_start}, {race_end}]")
 
-    # TODO: make this function return the whole df as well as the trimmed df!
-    race_df = df[df["UTC"].between(race_start, race_end)]
-    return race_df
+    return race_df  # TODO: make this function return the whole df as well as the trimmed df!
 
 
 def parse(
-    log,
+    log: Logger,
     source: str,
     source_ext: str,
-    twd: int | None = None,
-    race_start: int | None = None,
-    race_end: int | None = None,
-):
+    twd: Optional[int] = None,
+    race_start: Optional[int] = None,
+    race_end: Optional[int] = None,
+) -> pd.DataFrame:
     # MAIN SUPPORT FOR VKX!!!!!
 
     log.debug(f"Attempting to extract data from {source}")
@@ -100,8 +117,8 @@ def parse(
     n = len(df)
     log.debug(f"{n} trackpoints recorded")
 
-    # add speed, convert to deg etc
-    df = sog2knots(log, df)
+    # add convert sog from m/s to knots
+    df = ms2knots(log, df)
 
     # fix rounding errors
     df = fix_rounding(log, df)

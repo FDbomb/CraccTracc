@@ -2,10 +2,19 @@
 # Input: pandas dataframe
 # Output: n/a
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import matplotlib.pyplot as plt
 
+if TYPE_CHECKING:
+    from logging import Logger
 
-def dashboard(log, df):
+    import pandas as pd
+
+
+def dashboard(log: Logger, df: pd.DataFrame) -> None:
     fig = plt.figure(0)
 
     ax1 = fig.add_subplot(211)
@@ -29,7 +38,7 @@ def dashboard(log, df):
     ax4.set_title("Polarized")
 
 
-def true_wind(log, df):
+def true_wind(log: Logger, df: pd.DataFrame) -> None:
     fig = plt.figure(1)
     ax1 = fig.add_subplot(121)
     ax2 = fig.add_subplot(122)
@@ -43,7 +52,7 @@ def true_wind(log, df):
     ax2.set_title("Wind speed over time")
 
 
-def plot(log, df, y, x="UTC"):
+def plot(log: Logger, df: pd.DataFrame, y: str, x: str = "UTC") -> None:
     """Plot y vs x (default x=UTC) where x and y are column names from the pd.DataFrame"""
     fig = plt.figure(2)
     ax1 = fig.add_subplot(111)
@@ -52,12 +61,12 @@ def plot(log, df, y, x="UTC"):
     ax1.set_title(f"{y} over {x}")
 
 
-def show_plots(log):
+def show_plots(log: Logger) -> None:
     plt.show()  # TODO: Show plots in non-blocking manner - block=False
     log.debug(f"{len(plt.get_fignums())} plots displayed")
 
 
-def close_plots(log):
+def close_plots(log: Logger) -> None:
     num_plots = len(plt.get_fignums())
     plt.close("all")
     if len(plt.get_fignums()) == 0:

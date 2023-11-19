@@ -5,7 +5,7 @@ from cracctracc.common import cracclog as clog
 
 # Submodules
 from cracctracc.modules import manoeuvres as mano
-from cracctracc.modules import parser, visualiser, wind
+from cracctracc.modules import parser, wind
 
 
 def main():

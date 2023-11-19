@@ -1,12 +1,18 @@
 # Module to find manoeuvres in GPX time series data
 # Input: pandas dataframe w/ time, speed, heading
 # Output: dataframe w/ type of manoeuvre, time of manoeuvre, length of manoeuvre
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
 
+if TYPE_CHECKING:
+    from logging import Logger
 
-def hdg2twa(hdg, twd):
+
+def hdg2twa(hdg: float, twd: int) -> float:
     """Convert a heading to TWA given the TWD.
 
     Args:
@@ -43,7 +49,7 @@ def hdg2twa(hdg, twd):
     return twa
 
 
-def apply_PoS(log, df):
+def apply_PoS(log: Logger, df: pd.DataFrame) -> pd.DataFrame:
     """Apply a Point of Sail (PoS) and tack to a DataFrame.
 
     Args:
@@ -71,7 +77,7 @@ def apply_PoS(log, df):
     return df
 
 
-def identify_manoeuvres(log, df):
+def identify_manoeuvres(log: Logger, df: pd.DataFrame) -> pd.DataFrame:
     """Identify manoeuvres in a DataFrame.
 
     Args:
@@ -105,7 +111,7 @@ def identify_manoeuvres(log, df):
     return df
 
 
-def manoeuvres(log, df):
+def manoeuvres(log: Logger, df: pd.DataFrame) -> pd.DataFrame:
     """Proccess DataFrame to identify manoeuvres.
 
     Args:
@@ -136,7 +142,7 @@ def manoeuvres(log, df):
     return df
 
 
-def manoeuvres_analysis(log, df):
+def manoeuvres_analysis(log: Logger, df: pd.DataFrame) -> pd.DataFrame:
     """Create a DataFrame of manoeuvres with analysis given a DataFrame.
 
     Args:
