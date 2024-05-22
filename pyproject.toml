@@ -1,0 +1,29 @@
+[tool.black]
+line-length = 120
+
+[tool.poetry]
+name = "CraccTracc"
+version = "0.1.0"
+description = "VMG Visualiser for Sail Boats using GPX Data"
+authors = ["James Lawira-Fernandez <jameslf9594@gmail.com>, Felix Daverio <felixdaverio99@gmail.com>"]
+license = "GPL-3.0-only"
+readme = "README.md"
+repository = "https://github.com/FDbomb/CraccTracc"
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.13"
+pandas = "^2.1.1"
+geographiclib = "^2.0"
+matplotlib = "^3.8.0"
+click = "^8.1.7"
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.4.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+#run = "cracctracc:main"
+#cracctracc = "cracctracc"
