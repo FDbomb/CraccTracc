@@ -1,16 +1,24 @@
-import { TrackPoint, ProcessedTrackPoint, SailingAnalysis, PointOfSail, Tack } from '../types/sailing';
+import {
+  TrackPoint,
+  ProcessedTrackPoint,
+  SailingAnalysis,
+  PointOfSail,
+  Tack,
+} from '../types/sailing';
 
-export async function processTrackData(trackPoints: TrackPoint[]): Promise<SailingAnalysis> {
+export async function processTrackData(
+  trackPoints: TrackPoint[]
+): Promise<SailingAnalysis> {
   // TODO: Implement complete data processing pipeline
   // This will be implemented in Phase 5
-  
-  const processedPoints: ProcessedTrackPoint[] = trackPoints.map(point => ({
+
+  const processedPoints: ProcessedTrackPoint[] = trackPoints.map((point) => ({
     ...point,
     twd: 0,
     tws: 0,
     twa: 0,
     pos: PointOfSail.Upwind,
-    tack: Tack.Port
+    tack: Tack.Port,
   }));
 
   return {
@@ -23,7 +31,7 @@ export async function processTrackData(trackPoints: TrackPoint[]): Promise<Saili
       maxSpeed: 0,
       tackCount: 0,
       gybeCount: 0,
-      averageTwa: 0
+      averageTwa: 0,
     },
     metadata: {
       filename: '',
@@ -31,7 +39,7 @@ export async function processTrackData(trackPoints: TrackPoint[]): Promise<Saili
       fileSize: 0,
       trackPointCount: trackPoints.length,
       startTime: 0,
-      endTime: 0
-    }
+      endTime: 0,
+    },
   };
 }
