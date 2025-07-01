@@ -4,6 +4,7 @@ import { TrackPoint, ProcessingResult, FileMetadata } from '../types/sailing';
 import { sanitizeTrackPoint } from '../types/guards';
 
 export class GPXParser {
+  private static readonly METERS_PER_SECOND_TO_KNOTS = 1.943844;
   private xmlParser: XMLParser;
 
   constructor() {
@@ -88,7 +89,11 @@ export class GPXParser {
 
       // Parse timestamp
       const timeStr = gpxPoint.time;
-      const utc = timeStr ? new Date(timeStr).getTime() : Date.now();
+      if (!timeStr) {
+        console.warn('GPX track point missing timestamp, skipping point');
+        return null;
+      }
+      const utc = new Date(timeStr).getTime();
 
       // Extract extensions for speed and course
       const extensions = gpxPoint.extensions;
@@ -99,7 +104,7 @@ export class GPXParser {
         // Different GPS devices use different extension formats
         // Handle common formats from Garmin, Suunto, etc.
         if (extensions.speed !== undefined) {
-          sog = parseFloat(extensions.speed) * 1.943844; // m/s to knots
+          sog = parseFloat(extensions.speed) * GPXParser.METERS_PER_SECOND_TO_KNOTS;
         }
         if (extensions.course !== undefined) {
           cog = parseFloat(extensions.course);
@@ -108,7 +113,7 @@ export class GPXParser {
         // Handle nested extension formats (Garmin TPX)
         if (extensions.gpxtpx) {
           if (extensions.gpxtpx.speed) {
-            sog = parseFloat(extensions.gpxtpx.speed) * 1.943844;
+            sog = parseFloat(extensions.gpxtpx.speed) * GPXParser.METERS_PER_SECOND_TO_KNOTS;
           }
           if (extensions.gpxtpx.course) {
             cog = parseFloat(extensions.gpxtpx.course);
@@ -119,7 +124,7 @@ export class GPXParser {
         if (extensions['garmin:TrackPointExtension']) {
           const garmin = extensions['garmin:TrackPointExtension'];
           if (garmin.speed) {
-            sog = parseFloat(garmin.speed) * 1.943844;
+            sog = parseFloat(garmin.speed) * GPXParser.METERS_PER_SECOND_TO_KNOTS;
           }
           if (garmin.course) {
             cog = parseFloat(garmin.course);

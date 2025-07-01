@@ -8,8 +8,8 @@ export class VKXParser {
   private readonly formatStructures = {
     0xFF: { size: 7, description: 'Page Header' },
     0xFE: { size: 2, description: 'Page Terminator' },
-    0x02: { size: 36, description: 'Position, Velocity, and Orientation' }, // 8+4+4+7*4 = 36 bytes
-    0x03: { size: 16, description: 'Declination' },
+    0x02: { size: 44, description: 'Position, Velocity, and Orientation' }, // Q(8)+i(4)+i(4)+7*f(4) = 44 bytes
+    0x03: { size: 20, description: 'Declination' }, // Q(8)+f(4)+i(4)+i(4) = 20 bytes
     0x04: { size: 13, description: 'Race Timer Event' },
     0x05: { size: 17, description: 'Line Position' },
     0x06: { size: 18, description: 'Shift Angle' },

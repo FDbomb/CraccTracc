@@ -10,6 +10,9 @@ export interface ParsedFileData {
 }
 
 export class FileParser {
+  private static readonly MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024; // 50MB
+  private static readonly MIN_VKX_FILE_SIZE_BYTES = 10;
+  
   private gpxParser: GPXParser;
   private vkxParser: VKXParser;
 
@@ -20,12 +23,12 @@ export class FileParser {
 
   async parseFile(file: File): Promise<ProcessingResult<ParsedFileData>> {
     // Validate file size first
-    if (file.size > this.getMaxFileSize()) {
+    if (file.size > FileParser.MAX_FILE_SIZE_BYTES) {
       return {
         success: false,
         error: {
           code: 'FILE_TOO_LARGE',
-          message: `File size (${(file.size / (1024 * 1024)).toFixed(1)}MB) exceeds the maximum allowed size (${this.getMaxFileSize() / (1024 * 1024)}MB).`
+          message: `File size (${(file.size / (1024 * 1024)).toFixed(1)}MB) exceeds the maximum allowed size (${FileParser.MAX_FILE_SIZE_BYTES / (1024 * 1024)}MB).`
         }
       };
     }
@@ -92,7 +95,7 @@ export class FileParser {
   }
 
   getMaxFileSize(): number {
-    return 50 * 1024 * 1024; // 50MB limit
+    return FileParser.MAX_FILE_SIZE_BYTES;
   }
 
   /**
@@ -128,18 +131,18 @@ export class FileParser {
             }
           };
         }
-      } else if (extension === 'vkx') {
-        // Quick VKX validation - check if it has binary data
-        if (file.size < 10) {
-          return {
-            success: false,
-            error: {
-              code: 'INVALID_VKX_FORMAT',
-              message: 'VKX file appears to be too small to contain valid data'
-            }
-          };
-        }
-      }
+             } else if (extension === 'vkx') {
+         // Quick VKX validation - check if it has binary data
+         if (file.size < FileParser.MIN_VKX_FILE_SIZE_BYTES) {
+           return {
+             success: false,
+             error: {
+               code: 'INVALID_VKX_FORMAT',
+               message: 'VKX file appears to be too small to contain valid data'
+             }
+           };
+         }
+       }
 
       return { success: true, data: true };
     } catch (error) {

@@ -197,7 +197,8 @@ describe('File Parser Tests', () => {
 
       // Should not crash, but might not find valid data
       expect(result.success).toBe(true);
-      // trackPoints might be empty due to invalid data, but parser shouldn't fail
+      // trackPoints should be empty due to invalid data
+      expect(result.data?.trackPoints).toHaveLength(0);
     });
   });
 
