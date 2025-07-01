@@ -1,0 +1,39 @@
+{
+  "name": "cracctracc-web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "format": "prettier --write .",
+    "lint:fix": "eslint . --fix"
+  },
+  "dependencies": {
+    "@tanstack/react-table": "^8.21.3",
+    "date-fns": "^4.1.0",
+    "fast-xml-parser": "^5.2.5",
+    "geographiclib-geodesic": "^2.1.1",
+    "lucide-react": "^0.525.0",
+    "next": "15.3.4",
+    "plotly.js": "^3.0.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-plotly.js": "^2.6.0",
+    "recharts": "^3.0.2"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/plotly.js": "^3.0.2",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "15.3.4",
+    "prettier": "^3.6.2",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
