@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { Upload, AlertCircle, CheckCircle, FileIcon } from 'lucide-react';
+import { Upload, AlertCircle, CheckCircle } from 'lucide-react';
 import { SailingAnalysis } from '../../lib/types/sailing';
 
 interface FileUploadProps {
@@ -9,60 +9,28 @@ interface FileUploadProps {
   onError: (error: string) => void;
 }
 
-interface FileValidation {
-  isValid: boolean;
-  error?: string;
-}
-
 export function FileUpload({ onDataProcessed, onError }: FileUploadProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [uploadStatus, setUploadStatus] = useState<'idle' | 'success' | 'error'>('idle');
-  const [fileName, setFileName] = useState<string>('');
 
-  const SUPPORTED_FORMATS = ['.gpx', '.vkx'];
-  const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
-
-  const validateFile = (file: File): FileValidation => {
-    const extension = '.' + file.name.split('.').pop()?.toLowerCase();
-    
-    if (!SUPPORTED_FORMATS.includes(extension)) {
-      return {
-        isValid: false,
-        error: `Unsupported file type. Please use: ${SUPPORTED_FORMATS.join(', ')}`
-      };
-    }
-
-    if (file.size > MAX_FILE_SIZE) {
-      return {
-        isValid: false,
-        error: 'File size too large. Maximum size is 50MB.'
-      };
-    }
-
-    return { isValid: true };
-  };
-
-  const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  }, []);
-
-  const handleDragLeave = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-  }, []);
-
-  const processFile = async (file: File) => {
+  const processFile = useCallback(async (file: File) => {
     setIsProcessing(true);
     setUploadStatus('idle');
-    setFileName(file.name);
 
     try {
-      // Validate file
-      const validation = validateFile(file);
-      if (!validation.isValid) {
-        throw new Error(validation.error);
+      // Validate file type
+      const allowedTypes = ['.gpx', '.vkx'];
+      const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
+      
+      if (!allowedTypes.includes(fileExtension)) {
+        throw new Error(`Unsupported file type. Please use: ${allowedTypes.join(', ')}`);
+      }
+
+      // Validate file size (50MB limit)
+      const maxSize = 50 * 1024 * 1024; // 50MB in bytes
+      if (file.size > maxSize) {
+        throw new Error('File size too large. Maximum size is 50MB.');
       }
 
       // Send to API for processing
@@ -75,7 +43,7 @@ export function FileUpload({ onDataProcessed, onError }: FileUploadProps) {
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.error || `Upload failed: ${response.statusText}`);
       }
 
@@ -90,7 +58,17 @@ export function FileUpload({ onDataProcessed, onError }: FileUploadProps) {
     } finally {
       setIsProcessing(false);
     }
-  };
+  }, [onDataProcessed, onError]);
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  }, []);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -100,24 +78,22 @@ export function FileUpload({ onDataProcessed, onError }: FileUploadProps) {
     if (files.length > 0) {
       processFile(files[0]);
     }
-  }, []);
+  }, [processFile]);
 
   const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
       processFile(files[0]);
     }
-  }, []);
+  }, [processFile]);
 
   return (
     <div className="w-full max-w-md mx-auto">
       <div
         className={`
-          border-2 border-dashed rounded-lg p-8 text-center transition-all duration-200
+          border-2 border-dashed rounded-lg p-8 text-center transition-colors
           ${isDragging ? 'border-blue-400 bg-blue-50' : 'border-gray-300'}
-          ${isProcessing ? 'opacity-50 pointer-events-none' : 'hover:border-gray-400 hover:bg-gray-50'}
-          ${uploadStatus === 'error' ? 'border-red-300 bg-red-50' : ''}
-          ${uploadStatus === 'success' ? 'border-green-300 bg-green-50' : ''}
+          ${isProcessing ? 'opacity-50 pointer-events-none' : 'hover:border-gray-400'}
         `}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -125,44 +101,21 @@ export function FileUpload({ onDataProcessed, onError }: FileUploadProps) {
       >
         <div className="flex flex-col items-center space-y-4">
           {isProcessing ? (
-            <>
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-              <div>
-                <p className="text-lg font-medium text-gray-900">Processing file...</p>
-                <p className="text-sm text-gray-500">{fileName}</p>
-              </div>
-            </>
-          ) : uploadStatus === 'success' ? (
-            <>
-              <CheckCircle className="h-12 w-12 text-green-600" />
-              <div>
-                <p className="text-lg font-medium text-green-900">File processed successfully!</p>
-                <p className="text-sm text-green-600">{fileName}</p>
-              </div>
-            </>
-          ) : uploadStatus === 'error' ? (
-            <>
-              <AlertCircle className="h-12 w-12 text-red-600" />
-              <div>
-                <p className="text-lg font-medium text-red-900">Upload failed</p>
-                <p className="text-sm text-red-600">Please try again</p>
-              </div>
-            </>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
           ) : (
-            <>
-              <Upload className="h-12 w-12 text-gray-400" />
-              <div>
-                <p className="text-lg font-medium text-gray-900">
-                  Upload your sailing track
-                </p>
-                <p className="text-sm text-gray-500">
-                  Drag and drop your GPX or VKX file here, or click to browse
-                </p>
-              </div>
-            </>
+            <Upload className="h-12 w-12 text-gray-400" />
           )}
+          
+          <div>
+            <p className="text-lg font-medium text-gray-900">
+              {isProcessing ? 'Processing file...' : 'Upload your sailing track'}
+            </p>
+            <p className="text-sm text-gray-500">
+              Drag and drop your GPX or VKX file here, or click to browse
+            </p>
+          </div>
 
-          {!isProcessing && uploadStatus !== 'success' && (
+          {!isProcessing && (
             <label className="cursor-pointer">
               <input
                 type="file"
@@ -170,29 +123,30 @@ export function FileUpload({ onDataProcessed, onError }: FileUploadProps) {
                 accept=".gpx,.vkx"
                 onChange={handleFileSelect}
               />
-              <span className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors">
-                <FileIcon className="w-4 h-4 mr-2" />
+              <span className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
                 Choose File
               </span>
             </label>
           )}
 
           {uploadStatus === 'success' && (
-            <button
-              onClick={() => {
-                setUploadStatus('idle');
-                setFileName('');
-              }}
-              className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
-            >
-              Upload Another File
-            </button>
+            <div className="flex items-center space-x-2 text-green-600">
+              <CheckCircle className="h-5 w-5" />
+              <span className="text-sm">File processed successfully!</span>
+            </div>
+          )}
+
+          {uploadStatus === 'error' && (
+            <div className="flex items-center space-x-2 text-red-600">
+              <AlertCircle className="h-5 w-5" />
+              <span className="text-sm">Upload failed. Please try again.</span>
+            </div>
           )}
         </div>
       </div>
 
       <div className="mt-4 text-xs text-gray-500">
-        <p><strong>Supported formats:</strong> {SUPPORTED_FORMATS.join(', ')}</p>
+        <p><strong>Supported formats:</strong> .gpx, .vkx</p>
         <p><strong>Max file size:</strong> 50MB</p>
       </div>
     </div>
