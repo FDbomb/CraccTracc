@@ -139,23 +139,31 @@ describe('WindCalculations', () => {
   });
 
   describe('angle interpolation', () => {
-    it('should interpolate angles correctly handling wrap-around', () => {
-      // Test private method through public interface
+    it('should interpolate angles correctly handling wrap-around', async () => {
       const trackPoints: TrackPoint[] = [
         { lat: 0, lon: 0, utc: 1500, sog: 5, cog: 0 }
       ];
 
-      const windData: WindData[] = [
+      // Mock fetchWindData to return test data for interpolation
+      const originalFetchWindData = WindCalculations.fetchWindData;
+      WindCalculations.fetchWindData = jest.fn().mockResolvedValue([
         { timestamp: 1000, speed: 10, direction: 350 },
         { timestamp: 2000, speed: 10, direction: 10 }
-      ];
+      ]);
 
-      // The interpolated direction at timestamp 1500 should be approximately 0
-      // This tests the angle wrap-around logic
-      return WindCalculations.addWindData(trackPoints, {}).then(result => {
-        // Basic test - more complex interpolation would require exposing private methods
-        expect(result[0].twd).toBeDefined();
+      const result = await WindCalculations.addWindData(trackPoints, {
+        useWeatherAPI: true,
+        date: '2023-01-01'
       });
+
+      // At timestamp 1500 (halfway between 1000 and 2000), direction should interpolate
+      // from 350 to 10 degrees, which should wrap around to approximately 0 degrees
+      expect(result[0].twd).toBeCloseTo(0, 0); // Allow ±0.5 degree tolerance
+      expect(result[0].tws).toBe(10);
+      expect(result[0].twa).toBeCloseTo(0, 0); // calculateTWA(0, 0) = 0
+
+      // Restore original function
+      WindCalculations.fetchWindData = originalFetchWindData;
     });
   });
 
