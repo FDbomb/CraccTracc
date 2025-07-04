@@ -14,6 +14,10 @@ export interface OptimizationSettings {
   decimation: {
     enabled: boolean;
     factor: number;
+    significantChange: {
+      speedThreshold: number; // knots - significant speed change to preserve point
+      headingThreshold: number; // degrees - significant heading change to preserve point
+    };
   };
 }
 
@@ -153,8 +157,9 @@ export class DataOptimizer {
       const speedChange = Math.abs(current.sog - prev.sog);
       const headingChange = this.calculateAngularDifference(current.cog, prev.cog);
       
-      // Keep point if it represents significant change
-      if (speedChange > 0.5 || headingChange > 10) {
+      // Keep point if it represents significant change (now configurable)
+      if (speedChange > this.settings.decimation.significantChange.speedThreshold || 
+          headingChange > this.settings.decimation.significantChange.headingThreshold) {
         decimated.push(current);
       } else {
         // Sample at regular intervals for less significant points
@@ -229,7 +234,11 @@ export function createDataOptimizer(customSettings?: Partial<OptimizationSetting
     },
     decimation: {
       enabled: true,
-      factor: 2
+      factor: 2,
+      significantChange: {
+        speedThreshold: 0.5, // knots
+        headingThreshold: 10 // degrees
+      }
     }
   };
 

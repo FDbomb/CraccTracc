@@ -27,6 +27,11 @@ interface AnalysisSettings {
     tackingAngleThreshold: number;
     vmgCalculationMethod: 'true_wind' | 'apparent_wind';
   };
+  optimization: {
+    maxDataPoints: number;
+    decimationSpeedThreshold: number;
+    decimationHeadingThreshold: number;
+  };
 }
 
 interface UserSettingsProps {
@@ -58,12 +63,17 @@ const defaultSettings: AnalysisSettings = {
     windShiftThreshold: 15,
     tackingAngleThreshold: 20,
     vmgCalculationMethod: 'true_wind'
+  },
+  optimization: {
+    maxDataPoints: 5000,
+    decimationSpeedThreshold: 0.5,
+    decimationHeadingThreshold: 10
   }
 };
 
 export function UserSettings({ isOpen, onClose, onSettingsChange }: UserSettingsProps) {
   const [settings, setSettings] = useState<AnalysisSettings>(defaultSettings);
-  const [activeTab, setActiveTab] = useState<'units' | 'filters' | 'display' | 'analysis'>('units');
+  const [activeTab, setActiveTab] = useState<'units' | 'filters' | 'display' | 'analysis' | 'optimization'>('units');
   const [hasChanges, setHasChanges] = useState(false);
 
   useEffect(() => {
@@ -115,7 +125,8 @@ export function UserSettings({ isOpen, onClose, onSettingsChange }: UserSettings
     { id: 'units', label: 'Units', icon: Settings },
     { id: 'filters', label: 'Filters', icon: EyeOff },
     { id: 'display', label: 'Display', icon: Eye },
-    { id: 'analysis', label: 'Analysis', icon: Settings }
+    { id: 'analysis', label: 'Analysis', icon: Settings },
+    { id: 'optimization', label: 'Performance', icon: Settings }
   ] as const;
 
   return (
@@ -400,6 +411,74 @@ export function UserSettings({ isOpen, onClose, onSettingsChange }: UserSettings
                       <option value="apparent_wind">Apparent Wind</option>
                     </select>
                     <p className="text-xs text-gray-500 mt-1">Method for calculating Velocity Made Good</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'optimization' && (
+              <div className="space-y-6">
+                <h3 className="text-lg font-medium">Performance Optimization</h3>
+                
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Maximum Data Points
+                    </label>
+                    <input
+                      type="number"
+                      min="1000"
+                      max="20000"
+                      step="500"
+                      value={settings.optimization.maxDataPoints}
+                      onChange={(e) => handleSettingChange('optimization', 'maxDataPoints', parseInt(e.target.value))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Maximum number of data points to display for performance</p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Speed Change Threshold ({settings.units.speed})
+                      </label>
+                      <input
+                        type="number"
+                        min="0.1"
+                        max="5.0"
+                        step="0.1"
+                        value={settings.optimization.decimationSpeedThreshold}
+                        onChange={(e) => handleSettingChange('optimization', 'decimationSpeedThreshold', parseFloat(e.target.value))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                      />
+                      <p className="text-xs text-gray-500 mt-1">Minimum speed change to preserve data point during optimization</p>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Heading Change Threshold (°)
+                      </label>
+                      <input
+                        type="number"
+                        min="1"
+                        max="45"
+                        step="1"
+                        value={settings.optimization.decimationHeadingThreshold}
+                        onChange={(e) => handleSettingChange('optimization', 'decimationHeadingThreshold', parseInt(e.target.value))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                      />
+                      <p className="text-xs text-gray-500 mt-1">Minimum heading change to preserve data point during optimization</p>
+                    </div>
+                  </div>
+
+                  <div className="bg-blue-50 p-4 rounded-lg">
+                    <h4 className="text-sm font-medium text-blue-900 mb-2">Optimization Tips</h4>
+                    <ul className="text-xs text-blue-800 space-y-1">
+                      <li>• Lower thresholds preserve more detail but may impact performance</li>
+                      <li>• Higher thresholds optimize performance but may lose fine details</li>
+                      <li>• Recommended: 0.5 knots speed, 10° heading for most use cases</li>
+                      <li>• For racing analysis: Use lower thresholds (0.2 knots, 5°)</li>
+                    </ul>
                   </div>
                 </div>
               </div>
