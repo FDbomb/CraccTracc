@@ -10,6 +10,8 @@ import { SummaryStats } from './stats/SummaryStats';
 import { DataExporter } from './export/DataExporter';
 import { PerformanceAnalytics } from './analytics/PerformanceAnalytics';
 import { UserSettings } from './settings/UserSettings';
+import { ShareComponent } from './sharing/ShareComponent';
+import { WeatherIntegration } from './weather/WeatherIntegration';
 import { SailingAnalysis } from '../lib/types/sailing';
 import { AlertTriangle, Settings, BarChart3, Download } from 'lucide-react';
 
@@ -218,39 +220,48 @@ export function Dashboard() {
                   <DataExporter analysis={analysisData} />
                 </div>
 
-                {/* Additional Export Options */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-                  <div className="bg-white p-4 rounded-lg shadow-sm border text-center">
-                    <h3 className="font-medium mb-2">Quick Export</h3>
-                    <p className="text-sm text-gray-600 mb-3">Export complete analysis as JSON</p>
-                    <button
-                      onClick={exportData}
-                      className="w-full px-3 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors"
-                    >
-                      Download JSON
-                    </button>
+                {/* Additional Features */}
+                <div className="space-y-8 max-w-4xl mx-auto">
+                  {/* Quick Actions */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="bg-white p-4 rounded-lg shadow-sm border text-center">
+                      <h3 className="font-medium mb-2">Quick Export</h3>
+                      <p className="text-sm text-gray-600 mb-3">Export complete analysis as JSON</p>
+                      <button
+                        onClick={exportData}
+                        className="w-full px-3 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors"
+                      >
+                        Download JSON
+                      </button>
+                    </div>
+                    
+                    <div className="bg-white p-4 rounded-lg shadow-sm border text-center">
+                      <h3 className="font-medium mb-2">Share Analysis</h3>
+                      <p className="text-sm text-gray-600 mb-3">Create shareable links with privacy controls</p>
+                      <div className="text-green-600 text-sm font-medium">
+                        ✓ Available
+                      </div>
+                    </div>
+                    
+                    <div className="bg-white p-4 rounded-lg shadow-sm border text-center">
+                      <h3 className="font-medium mb-2">Weather Data</h3>
+                      <p className="text-sm text-gray-600 mb-3">Compare with historical weather conditions</p>
+                      <div className="text-green-600 text-sm font-medium">
+                        ✓ Available
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Sharing Section */}
+                  <div className="bg-white p-6 rounded-lg shadow border">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Share Analysis</h3>
+                    <ShareComponent analysisData={analysisData} />
                   </div>
                   
-                  <div className="bg-white p-4 rounded-lg shadow-sm border text-center">
-                    <h3 className="font-medium mb-2">Share Link</h3>
-                    <p className="text-sm text-gray-600 mb-3">Generate shareable analysis link</p>
-                    <button
-                      disabled
-                      className="w-full px-3 py-2 bg-gray-100 text-gray-400 rounded cursor-not-allowed"
-                    >
-                      Coming Soon
-                    </button>
-                  </div>
-                  
-                  <div className="bg-white p-4 rounded-lg shadow-sm border text-center">
-                    <h3 className="font-medium mb-2">API Export</h3>
-                    <p className="text-sm text-gray-600 mb-3">Send to external sailing app</p>
-                    <button
-                      disabled
-                      className="w-full px-3 py-2 bg-gray-100 text-gray-400 rounded cursor-not-allowed"
-                    >
-                      Coming Soon
-                    </button>
+                  {/* Weather Integration */}
+                  <div className="bg-white p-6 rounded-lg shadow border">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Weather Data Integration</h3>
+                    <WeatherIntegration analysisData={analysisData} />
                   </div>
                 </div>
               </div>
