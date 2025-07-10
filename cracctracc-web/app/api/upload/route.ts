@@ -1,17 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { FileParser } from '../../../src/lib/parsers';
-import { DataProcessor } from '../../../src/lib/utils/dataProcessing';
+import { FileParser } from '../../../lib/parsers';
+import { DataProcessor } from '../../../lib/utils/dataProcessing';
+import { auth } from '@/lib/auth/auth';
+import { headers } from 'next/headers';
 
 export async function POST(request: NextRequest) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File;
 
     if (!file) {
-      return NextResponse.json(
-        { error: 'No file provided' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
 
     // Create parser instance
@@ -21,7 +28,9 @@ export async function POST(request: NextRequest) {
     if (!parser.validateFileType(file)) {
       const supportedFormats = parser.getSupportedFormats();
       return NextResponse.json(
-        { error: `Unsupported file type. Please use: ${supportedFormats.map(f => `.${f}`).join(', ')}` },
+        {
+          error: `Unsupported file type. Please use: ${supportedFormats.map((f) => `.${f}`).join(', ')}`,
+        },
         { status: 400 }
       );
     }
@@ -58,21 +67,21 @@ export async function POST(request: NextRequest) {
       {
         windOptions: {
           fixedTwd: 0, // Default wind direction
-          useWeatherAPI: false
-        }
+          useWeatherAPI: false,
+        },
       }
     );
 
     return NextResponse.json(analysis);
-
   } catch (error) {
     console.error('Upload processing error:', error);
-    
+
     return NextResponse.json(
-      { 
-        error: error instanceof Error 
-          ? `Processing failed: ${error.message}` 
-          : 'Unknown processing error occurred'
+      {
+        error:
+          error instanceof Error
+            ? `Processing failed: ${error.message}`
+            : 'Unknown processing error occurred',
       },
       { status: 500 }
     );

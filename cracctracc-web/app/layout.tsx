@@ -14,8 +14,18 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: 'CraccTracc - Sailing Performance Analysis',
-  description: 'Analyze your sailing performance with CraccTracc. Upload GPX/VKX files to track manoeuvres, visualize wind data, and optimize your sailing technique.',
-  keywords: ['sailing', 'performance', 'analysis', 'GPX', 'VKX', 'manoeuvres', 'wind', 'tracking'],
+  description:
+    'Analyze your sailing performance with CraccTracc. Upload GPX/VKX files to track manoeuvres, visualize wind data, and optimize your sailing technique.',
+  keywords: [
+    'sailing',
+    'performance',
+    'analysis',
+    'GPX',
+    'VKX',
+    'manoeuvres',
+    'wind',
+    'tracking',
+  ],
 };
 
 export default function RootLayout({

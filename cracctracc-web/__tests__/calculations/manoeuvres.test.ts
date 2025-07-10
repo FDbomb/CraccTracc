@@ -1,5 +1,10 @@
-import { ManoeuvreDetection } from '../../src/lib/calculations/manoeuvres';
-import { ProcessedTrackPoint, ManoeuvreType, Tack, PointOfSail } from '../../src/lib/types/sailing';
+import { ManoeuvreDetection } from '../../lib/calculations/manoeuvres';
+import {
+  ProcessedTrackPoint,
+  ManoeuvreType,
+  Tack,
+  PointOfSail,
+} from '../../lib/types/sailing';
 
 describe('ManoeuvreDetection', () => {
   const createTrackPoint = (
@@ -17,7 +22,7 @@ describe('ManoeuvreDetection', () => {
     tws: 10,
     twa,
     pos,
-    tack
+    tack,
   });
 
   describe('detectManoeuvres', () => {
@@ -25,7 +30,9 @@ describe('ManoeuvreDetection', () => {
       const result = ManoeuvreDetection.detectManoeuvres([]);
       expect(result).toEqual([]);
 
-      const singlePoint = [createTrackPoint(45, Tack.Starboard, PointOfSail.Upwind)];
+      const singlePoint = [
+        createTrackPoint(45, Tack.Starboard, PointOfSail.Upwind),
+      ];
       const result2 = ManoeuvreDetection.detectManoeuvres(singlePoint);
       expect(result2).toEqual(singlePoint);
     });
@@ -34,7 +41,7 @@ describe('ManoeuvreDetection', () => {
       const trackPoints: ProcessedTrackPoint[] = [
         createTrackPoint(45, Tack.Starboard, PointOfSail.Upwind, 1000),
         createTrackPoint(-45, Tack.Port, PointOfSail.Upwind, 2000), // Tack
-        createTrackPoint(-50, Tack.Port, PointOfSail.Upwind, 3000)
+        createTrackPoint(-50, Tack.Port, PointOfSail.Upwind, 3000),
       ];
 
       const result = ManoeuvreDetection.detectManoeuvres(trackPoints);
@@ -48,7 +55,7 @@ describe('ManoeuvreDetection', () => {
       const trackPoints: ProcessedTrackPoint[] = [
         createTrackPoint(120, Tack.Starboard, PointOfSail.Downwind, 1000),
         createTrackPoint(-120, Tack.Port, PointOfSail.Downwind, 2000), // Gybe
-        createTrackPoint(-130, Tack.Port, PointOfSail.Downwind, 3000)
+        createTrackPoint(-130, Tack.Port, PointOfSail.Downwind, 3000),
       ];
 
       const result = ManoeuvreDetection.detectManoeuvres(trackPoints);
@@ -62,7 +69,7 @@ describe('ManoeuvreDetection', () => {
       const trackPoints: ProcessedTrackPoint[] = [
         createTrackPoint(120, Tack.Starboard, PointOfSail.Downwind, 1000),
         createTrackPoint(45, Tack.Starboard, PointOfSail.Upwind, 2000), // Round up
-        createTrackPoint(40, Tack.Starboard, PointOfSail.Upwind, 3000)
+        createTrackPoint(40, Tack.Starboard, PointOfSail.Upwind, 3000),
       ];
 
       const result = ManoeuvreDetection.detectManoeuvres(trackPoints);
@@ -74,7 +81,7 @@ describe('ManoeuvreDetection', () => {
       const trackPoints: ProcessedTrackPoint[] = [
         createTrackPoint(45, Tack.Starboard, PointOfSail.Upwind, 1000),
         createTrackPoint(120, Tack.Starboard, PointOfSail.Downwind, 2000), // Bear away
-        createTrackPoint(130, Tack.Starboard, PointOfSail.Downwind, 3000)
+        createTrackPoint(130, Tack.Starboard, PointOfSail.Downwind, 3000),
       ];
 
       const result = ManoeuvreDetection.detectManoeuvres(trackPoints);
@@ -86,7 +93,7 @@ describe('ManoeuvreDetection', () => {
       const trackPoints: ProcessedTrackPoint[] = [
         createTrackPoint(45, Tack.Starboard, PointOfSail.Upwind, 1000),
         createTrackPoint(50, Tack.Starboard, PointOfSail.Upwind, 2000), // Same tack, same point of sail
-        createTrackPoint(40, Tack.Starboard, PointOfSail.Upwind, 3000)
+        createTrackPoint(40, Tack.Starboard, PointOfSail.Upwind, 3000),
       ];
 
       const result = ManoeuvreDetection.detectManoeuvres(trackPoints);
@@ -101,15 +108,21 @@ describe('ManoeuvreDetection', () => {
     it('should extract manoeuvre events from track points', () => {
       const trackPoints: ProcessedTrackPoint[] = [
         createTrackPoint(45, Tack.Starboard, PointOfSail.Upwind, 1000),
-        { ...createTrackPoint(-45, Tack.Port, PointOfSail.Upwind, 2000), manoeuvre: ManoeuvreType.Tack },
+        {
+          ...createTrackPoint(-45, Tack.Port, PointOfSail.Upwind, 2000),
+          manoeuvre: ManoeuvreType.Tack,
+        },
         createTrackPoint(-50, Tack.Port, PointOfSail.Upwind, 3000),
-        { ...createTrackPoint(-120, Tack.Port, PointOfSail.Downwind, 4000), manoeuvre: ManoeuvreType.BearAway }
+        {
+          ...createTrackPoint(-120, Tack.Port, PointOfSail.Downwind, 4000),
+          manoeuvre: ManoeuvreType.BearAway,
+        },
       ];
 
       const events = ManoeuvreDetection.extractManoeuvreEvents(trackPoints);
 
       expect(events).toHaveLength(2);
-      
+
       // Check tack event
       expect(events[0].type).toBe(ManoeuvreType.Tack);
       expect(events[0].timestamp).toBe(2000);
@@ -127,7 +140,7 @@ describe('ManoeuvreDetection', () => {
     it('should return empty array when no manoeuvres present', () => {
       const trackPoints: ProcessedTrackPoint[] = [
         createTrackPoint(45, Tack.Starboard, PointOfSail.Upwind, 1000),
-        createTrackPoint(50, Tack.Starboard, PointOfSail.Upwind, 2000)
+        createTrackPoint(50, Tack.Starboard, PointOfSail.Upwind, 2000),
       ];
 
       const events = ManoeuvreDetection.extractManoeuvreEvents(trackPoints);
@@ -144,7 +157,7 @@ describe('ManoeuvreDetection', () => {
           timestamp: 1000,
           startTwa: 45,
           endTwa: -45,
-          duration: 5
+          duration: 5,
         },
         {
           id: 'tack-2',
@@ -152,7 +165,7 @@ describe('ManoeuvreDetection', () => {
           timestamp: 2000,
           startTwa: -40,
           endTwa: 40,
-          duration: 7
+          duration: 7,
         },
         {
           id: 'gybe-1',
@@ -160,7 +173,7 @@ describe('ManoeuvreDetection', () => {
           timestamp: 3000,
           startTwa: 120,
           endTwa: -120,
-          duration: 10
+          duration: 10,
         },
         {
           id: 'roundup-1',
@@ -168,8 +181,8 @@ describe('ManoeuvreDetection', () => {
           timestamp: 4000,
           startTwa: 120,
           endTwa: 45,
-          duration: 8
-        }
+          duration: 8,
+        },
       ];
 
       const analysis = ManoeuvreDetection.analyzeManoeuvres(events);
@@ -202,7 +215,7 @@ describe('ManoeuvreDetection', () => {
         timestamp: 1000,
         startTwa: 45,
         endTwa: -45,
-        duration: 5
+        duration: 5,
       },
       {
         id: 'gybe-1',
@@ -210,7 +223,7 @@ describe('ManoeuvreDetection', () => {
         timestamp: 2000,
         startTwa: 120,
         endTwa: -120,
-        duration: 10
+        duration: 10,
       },
       {
         id: 'roundup-1',
@@ -218,13 +231,13 @@ describe('ManoeuvreDetection', () => {
         timestamp: 3000,
         startTwa: 120,
         endTwa: 45,
-        duration: 8
-      }
+        duration: 8,
+      },
     ];
 
     it('should filter by manoeuvre type', () => {
       const filtered = ManoeuvreDetection.filterManoeuvres(events, {
-        types: [ManoeuvreType.Tack, ManoeuvreType.Gybe]
+        types: [ManoeuvreType.Tack, ManoeuvreType.Gybe],
       });
 
       expect(filtered).toHaveLength(2);
@@ -235,7 +248,7 @@ describe('ManoeuvreDetection', () => {
     it('should filter by time range', () => {
       const filtered = ManoeuvreDetection.filterManoeuvres(events, {
         startTime: 1500,
-        endTime: 2500
+        endTime: 2500,
       });
 
       expect(filtered).toHaveLength(1);
@@ -245,7 +258,7 @@ describe('ManoeuvreDetection', () => {
     it('should apply multiple filters', () => {
       const filtered = ManoeuvreDetection.filterManoeuvres(events, {
         types: [ManoeuvreType.Gybe, ManoeuvreType.RoundUp],
-        startTime: 1500
+        startTime: 1500,
       });
 
       expect(filtered).toHaveLength(2);
@@ -263,7 +276,7 @@ describe('ManoeuvreDetection', () => {
           timestamp: 1000,
           startTwa: 45,
           endTwa: -45,
-          duration: 5
+          duration: 5,
         },
         {
           id: 'tack-2',
@@ -271,7 +284,7 @@ describe('ManoeuvreDetection', () => {
           timestamp: 2000,
           startTwa: -40,
           endTwa: 40,
-          duration: 7
+          duration: 7,
         },
         {
           id: 'gybe-1',
@@ -279,8 +292,8 @@ describe('ManoeuvreDetection', () => {
           timestamp: 3000,
           startTwa: 120,
           endTwa: -120,
-          duration: 10
-        }
+          duration: 10,
+        },
       ];
 
       const stats = ManoeuvreDetection.getManoeuvreStatistics(events);
@@ -288,19 +301,19 @@ describe('ManoeuvreDetection', () => {
       expect(stats.get(ManoeuvreType.Tack)).toEqual({
         count: 2,
         averageDuration: 6,
-        totalDuration: 12
+        totalDuration: 12,
       });
 
       expect(stats.get(ManoeuvreType.Gybe)).toEqual({
         count: 1,
         averageDuration: 10,
-        totalDuration: 10
+        totalDuration: 10,
       });
 
       expect(stats.get(ManoeuvreType.RoundUp)).toEqual({
         count: 0,
         averageDuration: 0,
-        totalDuration: 0
+        totalDuration: 0,
       });
     });
   });

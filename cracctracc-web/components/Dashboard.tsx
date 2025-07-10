@@ -14,6 +14,8 @@ import { ShareComponent } from './sharing/ShareComponent';
 import { WeatherIntegration } from './weather/WeatherIntegration';
 import { SailingAnalysis } from '../lib/types/sailing';
 import { AlertTriangle, Settings, BarChart3, Download } from 'lucide-react';
+import Link from 'next/link';
+import { authClient } from '../lib/auth/auth-client';
 
 interface UserSettingsType {
   units: {
@@ -42,10 +44,15 @@ interface UserSettingsType {
 }
 
 export function Dashboard() {
-  const [analysisData, setAnalysisData] = useState<SailingAnalysis | null>(null);
+  const [analysisData, setAnalysisData] = useState<SailingAnalysis | null>(
+    null
+  );
   const [error, setError] = useState<string | null>(null);
-  const [activeView, setActiveView] = useState<'overview' | 'analytics' | 'export'>('overview');
+  const [activeView, setActiveView] = useState<
+    'overview' | 'analytics' | 'export'
+  >('overview');
   const [showSettings, setShowSettings] = useState(false);
+  const { data: session } = authClient.useSession();
 
   const handleDataProcessed = (analysis: SailingAnalysis) => {
     setAnalysisData(analysis);
@@ -63,7 +70,7 @@ export function Dashboard() {
 
   const exportData = () => {
     if (!analysisData) return;
-    
+
     const dataStr = JSON.stringify(analysisData, null, 2);
     const dataBlob = new Blob([dataStr], { type: 'application/json' });
     const url = URL.createObjectURL(dataBlob);
@@ -82,9 +89,11 @@ export function Dashboard() {
           <div className="flex justify-between items-center py-6">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">CraccTracc</h1>
-              <p className="text-gray-600">Advanced Sailing VMG Analysis Tool</p>
+              <p className="text-gray-600">
+                Advanced Sailing VMG Analysis Tool
+              </p>
             </div>
-            
+
             {/* Navigation Tabs */}
             {analysisData && (
               <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg">
@@ -123,14 +132,23 @@ export function Dashboard() {
               </div>
             )}
 
-            {/* Settings Button */}
-            <button
-              onClick={() => setShowSettings(true)}
-              className="flex items-center px-3 py-2 text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              <Settings className="w-5 h-5 mr-1" />
-              Settings
-            </button>
+            {/* Settings Button and Login Button */}
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => setShowSettings(true)}
+                className="flex items-center px-3 py-2 text-gray-600 hover:text-gray-900 transition-colors"
+              >
+                <Settings className="w-5 h-5 mr-1" />
+                Settings
+              </button>
+              {!session && (
+                <Link href="/login">
+                  <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                    Login
+                  </button>
+                </Link>
+              )}
+            </div>
           </div>
         </div>
       </header>
@@ -150,7 +168,7 @@ export function Dashboard() {
         {/* Upload Section */}
         {!analysisData && (
           <div className="text-center py-12">
-            <FileUpload 
+            <FileUpload
               onDataProcessed={handleDataProcessed}
               onError={handleError}
             />
@@ -197,11 +215,15 @@ export function Dashboard() {
             {activeView === 'analytics' && (
               <div className="space-y-8">
                 <div className="text-center">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">Performance Analytics</h2>
-                  <p className="text-gray-600">Detailed analysis of sailing performance and tactics</p>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                    Performance Analytics
+                  </h2>
+                  <p className="text-gray-600">
+                    Detailed analysis of sailing performance and tactics
+                  </p>
                 </div>
-                
-                <PerformanceAnalytics 
+
+                <PerformanceAnalytics
                   trackPoints={analysisData.trackPoints}
                   manoeuvres={analysisData.manoeuvres}
                 />
@@ -212,10 +234,15 @@ export function Dashboard() {
             {activeView === 'export' && (
               <div className="space-y-8">
                 <div className="text-center">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">Data Export</h2>
-                  <p className="text-gray-600">Export your sailing data in various formats with filtering options</p>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                    Data Export
+                  </h2>
+                  <p className="text-gray-600">
+                    Export your sailing data in various formats with filtering
+                    options
+                  </p>
                 </div>
-                
+
                 <div className="max-w-4xl mx-auto">
                   <DataExporter analysis={analysisData} />
                 </div>
@@ -226,7 +253,9 @@ export function Dashboard() {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="bg-white p-4 rounded-lg shadow-sm border text-center">
                       <h3 className="font-medium mb-2">Quick Export</h3>
-                      <p className="text-sm text-gray-600 mb-3">Export complete analysis as JSON</p>
+                      <p className="text-sm text-gray-600 mb-3">
+                        Export complete analysis as JSON
+                      </p>
                       <button
                         onClick={exportData}
                         className="w-full px-3 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors"
@@ -234,18 +263,22 @@ export function Dashboard() {
                         Download JSON
                       </button>
                     </div>
-                    
+
                     <div className="bg-white p-4 rounded-lg shadow-sm border text-center">
                       <h3 className="font-medium mb-2">Share Analysis</h3>
-                      <p className="text-sm text-gray-600 mb-3">Create shareable links with privacy controls</p>
+                      <p className="text-sm text-gray-600 mb-3">
+                        Create shareable links with privacy controls
+                      </p>
                       <div className="text-green-600 text-sm font-medium">
                         ✓ Available
                       </div>
                     </div>
-                    
+
                     <div className="bg-white p-4 rounded-lg shadow-sm border text-center">
                       <h3 className="font-medium mb-2">Weather Data</h3>
-                      <p className="text-sm text-gray-600 mb-3">Compare with historical weather conditions</p>
+                      <p className="text-sm text-gray-600 mb-3">
+                        Compare with historical weather conditions
+                      </p>
                       <div className="text-green-600 text-sm font-medium">
                         ✓ Available
                       </div>
@@ -254,13 +287,17 @@ export function Dashboard() {
 
                   {/* Sharing Section */}
                   <div className="bg-white p-6 rounded-lg shadow border">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Share Analysis</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                      Share Analysis
+                    </h3>
                     <ShareComponent analysisData={analysisData} />
                   </div>
-                  
+
                   {/* Weather Integration */}
                   <div className="bg-white p-6 rounded-lg shadow border">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Weather Data Integration</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                      Weather Data Integration
+                    </h3>
                     <WeatherIntegration analysisData={analysisData} />
                   </div>
                 </div>

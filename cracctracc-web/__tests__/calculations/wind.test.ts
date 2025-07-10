@@ -1,5 +1,10 @@
-import { WindCalculations } from '../../src/lib/calculations/wind';
-import { TrackPoint, WindData, PointOfSail, Tack } from '../../src/lib/types/sailing';
+import { WindCalculations } from '../../lib/calculations/wind';
+import {
+  TrackPoint,
+  WindData,
+  PointOfSail,
+  Tack,
+} from '../../lib/types/sailing';
 
 describe('WindCalculations', () => {
   describe('calculateTWA', () => {
@@ -36,29 +41,31 @@ describe('WindCalculations', () => {
         lon: 144.9631,
         utc: 1700000000000,
         sog: 5.5,
-        cog: 45
+        cog: 45,
       },
       {
         lat: -37.8137,
         lon: 144.9632,
         utc: 1700000060000,
         sog: 6.2,
-        cog: 90
+        cog: 90,
       },
       {
         lat: -37.8138,
         lon: 144.9633,
         utc: 1700000120000,
         sog: 4.8,
-        cog: 135
-      }
+        cog: 135,
+      },
     ];
 
     it('should add fixed wind data to track points', async () => {
-      const result = await WindCalculations.addWindData(sampleTrackPoints, { fixedTwd: 180 });
+      const result = await WindCalculations.addWindData(sampleTrackPoints, {
+        fixedTwd: 180,
+      });
 
       expect(result).toHaveLength(3);
-      
+
       // Check first point
       expect(result[0].twd).toBe(180);
       expect(result[0].tws).toBe(10);
@@ -89,13 +96,15 @@ describe('WindCalculations', () => {
   describe('Point of Sail calculation', () => {
     it('should calculate correct point of sail for different TWA values', async () => {
       const trackPoints: TrackPoint[] = [
-        { lat: 0, lon: 0, utc: 0, sog: 5, cog: 0 },   // TWA = 0 (Head to Wind)
-        { lat: 0, lon: 0, utc: 0, sog: 5, cog: 45 },  // TWA = 45 (Upwind)
-        { lat: 0, lon: 0, utc: 0, sog: 5, cog: 90 },  // TWA = 90 (Reach)
+        { lat: 0, lon: 0, utc: 0, sog: 5, cog: 0 }, // TWA = 0 (Head to Wind)
+        { lat: 0, lon: 0, utc: 0, sog: 5, cog: 45 }, // TWA = 45 (Upwind)
+        { lat: 0, lon: 0, utc: 0, sog: 5, cog: 90 }, // TWA = 90 (Reach)
         { lat: 0, lon: 0, utc: 0, sog: 5, cog: 135 }, // TWA = 135 (Downwind)
       ];
 
-      const result = await WindCalculations.addWindData(trackPoints, { fixedTwd: 0 });
+      const result = await WindCalculations.addWindData(trackPoints, {
+        fixedTwd: 0,
+      });
 
       expect(result[0].pos).toBe(PointOfSail.HeadToWind);
       expect(result[1].pos).toBe(PointOfSail.Upwind);
@@ -107,11 +116,13 @@ describe('WindCalculations', () => {
   describe('Tack calculation', () => {
     it('should calculate correct tack for positive and negative TWA', async () => {
       const trackPoints: TrackPoint[] = [
-        { lat: 0, lon: 0, utc: 0, sog: 5, cog: 45 },  // TWA = 45 (Starboard)
+        { lat: 0, lon: 0, utc: 0, sog: 5, cog: 45 }, // TWA = 45 (Starboard)
         { lat: 0, lon: 0, utc: 0, sog: 5, cog: 315 }, // TWA = -45 (Port)
       ];
 
-      const result = await WindCalculations.addWindData(trackPoints, { fixedTwd: 0 });
+      const result = await WindCalculations.addWindData(trackPoints, {
+        fixedTwd: 0,
+      });
 
       expect(result[0].tack).toBe(Tack.Starboard);
       expect(result[1].tack).toBe(Tack.Port);
@@ -122,14 +133,20 @@ describe('WindCalculations', () => {
     const windData: WindData[] = [
       { timestamp: 1000, speed: 10, direction: 180 },
       { timestamp: 2000, speed: 15, direction: 200 },
-      { timestamp: 3000, speed: 12, direction: 170 }
+      { timestamp: 3000, speed: 12, direction: 170 },
     ];
 
     it('should handle empty wind data', async () => {
-      const trackPoint: TrackPoint = { lat: 0, lon: 0, utc: 1500, sog: 5, cog: 90 };
-      const result = await WindCalculations.addWindData([trackPoint], { 
-        useWeatherAPI: true, 
-        date: '2023-01-01' 
+      const trackPoint: TrackPoint = {
+        lat: 0,
+        lon: 0,
+        utc: 1500,
+        sog: 5,
+        cog: 90,
+      };
+      const result = await WindCalculations.addWindData([trackPoint], {
+        useWeatherAPI: true,
+        date: '2023-01-01',
       });
 
       // Should use placeholder wind data from fetchWindData
@@ -141,19 +158,19 @@ describe('WindCalculations', () => {
   describe('angle interpolation', () => {
     it('should interpolate angles correctly handling wrap-around', async () => {
       const trackPoints: TrackPoint[] = [
-        { lat: 0, lon: 0, utc: 1500, sog: 5, cog: 0 }
+        { lat: 0, lon: 0, utc: 1500, sog: 5, cog: 0 },
       ];
 
       // Mock fetchWindData to return test data for interpolation
       const originalFetchWindData = WindCalculations.fetchWindData;
       WindCalculations.fetchWindData = jest.fn().mockResolvedValue([
         { timestamp: 1000, speed: 10, direction: 350 },
-        { timestamp: 2000, speed: 10, direction: 10 }
+        { timestamp: 2000, speed: 10, direction: 10 },
       ]);
 
       const result = await WindCalculations.addWindData(trackPoints, {
         useWeatherAPI: true,
-        date: '2023-01-01'
+        date: '2023-01-01',
       });
 
       // At timestamp 1500 (halfway between 1000 and 2000), direction should interpolate
@@ -170,12 +187,12 @@ describe('WindCalculations', () => {
   describe('weather API integration', () => {
     it('should fallback to fixed wind when API fails', async () => {
       const trackPoints: TrackPoint[] = [
-        { lat: 0, lon: 0, utc: 1000, sog: 5, cog: 90 }
+        { lat: 0, lon: 0, utc: 1000, sog: 5, cog: 90 },
       ];
 
       const result = await WindCalculations.addWindData(trackPoints, {
         useWeatherAPI: true,
-        date: '2023-01-01'
+        date: '2023-01-01',
       });
 
       // Should use placeholder wind data from fetchWindData
@@ -185,7 +202,7 @@ describe('WindCalculations', () => {
 
     it('should return placeholder data for fetchWindData', async () => {
       const windData = await WindCalculations.fetchWindData('2023-01-01');
-      
+
       expect(windData).toHaveLength(1);
       expect(windData[0].speed).toBe(10);
       expect(windData[0].direction).toBe(180);
