@@ -1,5 +1,13 @@
-import { DataProcessor, processTrackData } from '../../src/lib/utils/dataProcessing';
-import { TrackPoint, FileMetadata, PointOfSail, Tack } from '../../src/lib/types/sailing';
+import {
+  DataProcessor,
+  processTrackData,
+} from '../../lib/utils/dataProcessing';
+import {
+  TrackPoint,
+  FileMetadata,
+  PointOfSail,
+  Tack,
+} from '../../lib/types/sailing';
 
 describe('DataProcessor', () => {
   const sampleTrackPoints: TrackPoint[] = [
@@ -8,22 +16,22 @@ describe('DataProcessor', () => {
       lon: 144.9631,
       utc: 1700000000000,
       sog: 5.5,
-      cog: 45
+      cog: 45,
     },
     {
       lat: -37.8137,
       lon: 144.9632,
       utc: 1700000060000,
       sog: 6.2,
-      cog: 315 // This should create a tack from starboard to port
+      cog: 315, // This should create a tack from starboard to port
     },
     {
       lat: -37.8138,
       lon: 144.9633,
       utc: 1700000120000,
       sog: 4.8,
-      cog: 135
-    }
+      cog: 135,
+    },
   ];
 
   const sampleMetadata: FileMetadata = {
@@ -32,12 +40,15 @@ describe('DataProcessor', () => {
     fileSize: 1024,
     trackPointCount: 3,
     startTime: 1700000000000,
-    endTime: 1700000120000
+    endTime: 1700000120000,
   };
 
   describe('processTrackData', () => {
     it('should process track data with default options', async () => {
-      const result = await DataProcessor.processTrackData(sampleTrackPoints, sampleMetadata);
+      const result = await DataProcessor.processTrackData(
+        sampleTrackPoints,
+        sampleMetadata
+      );
 
       expect(result.trackPoints).toHaveLength(3);
       expect(result.metadata).toEqual(sampleMetadata);
@@ -57,7 +68,7 @@ describe('DataProcessor', () => {
         sampleTrackPoints,
         sampleMetadata,
         {
-          windOptions: { fixedTwd: 270 }
+          windOptions: { fixedTwd: 270 },
         }
       );
 
@@ -70,7 +81,7 @@ describe('DataProcessor', () => {
         sampleTrackPoints,
         sampleMetadata,
         {
-          filterOptions: { minSpeed: 5.0, maxSpeed: 6.0 }
+          filterOptions: { minSpeed: 5.0, maxSpeed: 6.0 },
         }
       );
 
@@ -84,10 +95,10 @@ describe('DataProcessor', () => {
         sampleTrackPoints,
         sampleMetadata,
         {
-          filterOptions: { 
-            startTime: 1700000030000, 
-            endTime: 1700000090000 
-          }
+          filterOptions: {
+            startTime: 1700000030000,
+            endTime: 1700000090000,
+          },
         }
       );
 
@@ -110,24 +121,57 @@ describe('DataProcessor', () => {
     it('should calculate performance metrics for different points of sail', () => {
       const processedPoints = [
         {
-          lat: 0, lon: 0, utc: 1000, sog: 5, cog: 45,
-          twd: 0, tws: 10, twa: 45, pos: PointOfSail.Upwind, tack: Tack.Starboard
+          lat: 0,
+          lon: 0,
+          utc: 1000,
+          sog: 5,
+          cog: 45,
+          twd: 0,
+          tws: 10,
+          twa: 45,
+          pos: PointOfSail.Upwind,
+          tack: Tack.Starboard,
         },
         {
-          lat: 0, lon: 0, utc: 2000, sog: 6, cog: 315,
-          twd: 0, tws: 10, twa: -45, pos: PointOfSail.Upwind, tack: Tack.Port
+          lat: 0,
+          lon: 0,
+          utc: 2000,
+          sog: 6,
+          cog: 315,
+          twd: 0,
+          tws: 10,
+          twa: -45,
+          pos: PointOfSail.Upwind,
+          tack: Tack.Port,
         },
         {
-          lat: 0, lon: 0, utc: 3000, sog: 8, cog: 90,
-          twd: 0, tws: 10, twa: 90, pos: PointOfSail.Reach, tack: Tack.Starboard
+          lat: 0,
+          lon: 0,
+          utc: 3000,
+          sog: 8,
+          cog: 90,
+          twd: 0,
+          tws: 10,
+          twa: 90,
+          pos: PointOfSail.Reach,
+          tack: Tack.Starboard,
         },
         {
-          lat: 0, lon: 0, utc: 4000, sog: 7, cog: 135,
-          twd: 0, tws: 10, twa: 135, pos: PointOfSail.Downwind, tack: Tack.Starboard
-        }
+          lat: 0,
+          lon: 0,
+          utc: 4000,
+          sog: 7,
+          cog: 135,
+          twd: 0,
+          tws: 10,
+          twa: 135,
+          pos: PointOfSail.Downwind,
+          tack: Tack.Starboard,
+        },
       ];
 
-      const metrics = DataProcessor.calculatePerformanceMetrics(processedPoints);
+      const metrics =
+        DataProcessor.calculatePerformanceMetrics(processedPoints);
 
       expect(metrics.upwindPerformance.averageSpeed).toBe(5.5); // (5+6)/2
       expect(metrics.upwindPerformance.averageTwa).toBe(45); // (45+45)/2
@@ -160,7 +204,10 @@ describe('DataProcessor', () => {
         { lat: 0, lon: 1, utc: 2000, sog: 5, cog: 0 }, // 1 degree longitude at equator ≈ 60 nm
       ];
 
-      const result = await DataProcessor.processTrackData(trackPoints, sampleMetadata);
+      const result = await DataProcessor.processTrackData(
+        trackPoints,
+        sampleMetadata
+      );
 
       // 1 degree longitude at equator is approximately 60 nautical miles
       expect(result.summary.totalDistance).toBeCloseTo(60, 0);
@@ -168,10 +215,13 @@ describe('DataProcessor', () => {
 
     it('should handle single point', async () => {
       const trackPoints: TrackPoint[] = [
-        { lat: 0, lon: 0, utc: 1000, sog: 5, cog: 0 }
+        { lat: 0, lon: 0, utc: 1000, sog: 5, cog: 0 },
       ];
 
-      const result = await DataProcessor.processTrackData(trackPoints, sampleMetadata);
+      const result = await DataProcessor.processTrackData(
+        trackPoints,
+        sampleMetadata
+      );
       expect(result.summary.totalDistance).toBe(0);
     });
   });
@@ -181,12 +231,16 @@ describe('DataProcessor', () => {
       const trackPoints: TrackPoint[] = [
         { lat: 0, lon: 0, utc: 1000, sog: 5, cog: 45 },
         { lat: 0, lon: 0.1, utc: 61000, sog: 10, cog: 315 }, // Tack from starboard to port
-        { lat: 0, lon: 0.2, utc: 121000, sog: 7, cog: 45 }   // Tack back to starboard
+        { lat: 0, lon: 0.2, utc: 121000, sog: 7, cog: 45 }, // Tack back to starboard
       ];
 
-      const result = await DataProcessor.processTrackData(trackPoints, sampleMetadata, {
-        windOptions: { fixedTwd: 0 }
-      });
+      const result = await DataProcessor.processTrackData(
+        trackPoints,
+        sampleMetadata,
+        {
+          windOptions: { fixedTwd: 0 },
+        }
+      );
 
       expect(result.summary.totalTime).toBe(2); // 120 seconds = 2 minutes
       expect(result.summary.averageSpeed).toBeCloseTo(7.3, 1); // (5+10+7)/3
@@ -210,19 +264,23 @@ describe('DataProcessor', () => {
   describe('integration with manoeuvre detection', () => {
     it('should detect and analyze manoeuvres in processed data', async () => {
       const trackPoints: TrackPoint[] = [
-        { lat: 0, lon: 0, utc: 1000, sog: 5, cog: 45 },  // Starboard upwind
+        { lat: 0, lon: 0, utc: 1000, sog: 5, cog: 45 }, // Starboard upwind
         { lat: 0, lon: 0.1, utc: 2000, sog: 6, cog: 315 }, // Port upwind (tack)
         { lat: 0, lon: 0.2, utc: 3000, sog: 7, cog: 135 }, // Port downwind (bear away)
-        { lat: 0, lon: 0.3, utc: 4000, sog: 6, cog: 225 }  // Starboard downwind (gybe)
+        { lat: 0, lon: 0.3, utc: 4000, sog: 6, cog: 225 }, // Starboard downwind (gybe)
       ];
 
-      const result = await DataProcessor.processTrackData(trackPoints, sampleMetadata, {
-        windOptions: { fixedTwd: 0 }
-      });
+      const result = await DataProcessor.processTrackData(
+        trackPoints,
+        sampleMetadata,
+        {
+          windOptions: { fixedTwd: 0 },
+        }
+      );
 
       // Should detect multiple manoeuvres
       expect(result.manoeuvres.length).toBeGreaterThan(0);
-      
+
       // Verify manoeuvre analysis is included in summary
       expect(result.summary.tackCount).toBeGreaterThanOrEqual(0);
       expect(result.summary.gybeCount).toBeGreaterThanOrEqual(0);
