@@ -33,30 +33,50 @@ export class DataProcessor {
     metadata: FileMetadata,
     options: ProcessingOptions = {}
   ): Promise<SailingAnalysis> {
-    // Step 1: Filter track points if requested
-    const filteredPoints = this.filterTrackPoints(trackPoints, options.filterOptions);
+    let workingTrackPoints = [...trackPoints];
 
-    // Step 2: Add wind data
-    let processedPoints = await WindCalculations.addWindData(
-      filteredPoints,
-      options.windOptions || {}
+    // Step 1: Enrich GPX data if necessary
+    if (metadata.fileType === 'gpx') {
+      workingTrackPoints = this._enrichGpxData(workingTrackPoints);
+    }
+
+    // Step 2: Filter track points if requested
+    const filteredPoints = this.filterTrackPoints(
+      workingTrackPoints,
+      options.filterOptions
     );
 
-    // Step 3: Detect manoeuvres
+    // Step 3: Add wind data
+    let processedPoints = await WindCalculations.addWindData(filteredPoints, {
+      ...options.windOptions,
+      date: new Date(metadata.startTime).toISOString(),
+    });
+
+    // Step 4: Detect manoeuvres
     processedPoints = ManoeuvreDetection.detectManoeuvres(processedPoints);
 
-    // Step 4: Extract manoeuvre events
-    const manoeuvres = ManoeuvreDetection.extractManoeuvreEvents(processedPoints);
+    // Step 5: Extract manoeuvre events
+    const manoeuvres =
+      ManoeuvreDetection.extractManoeuvreEvents(processedPoints);
 
-    // Step 5: Generate summary analysis
+    // Step 6: Generate summary analysis
     const summary = this.generateSummary(processedPoints, manoeuvres);
 
     return {
       trackPoints: processedPoints,
       manoeuvres,
       summary,
-      metadata
+      metadata,
     };
+  }
+
+  /**
+   * Enrich GPX track points with heading data.
+   */
+  private static _enrichGpxData(trackPoints: TrackPoint[]): TrackPoint[] {
+    // Use COG as a proxy for HDG, which is missing in GPX.
+    // This is a reasonable approximation for maneuver detection.
+    return trackPoints.map((p) => ({ ...p, hdg: p.cog }));
   }
 
   /**
@@ -68,7 +88,7 @@ export class DataProcessor {
   ): TrackPoint[] {
     if (!filters) return trackPoints;
 
-    return trackPoints.filter(point => {
+    return trackPoints.filter((point) => {
       // Speed filtering
       if (filters.minSpeed !== undefined && point.sog < filters.minSpeed) {
         return false;
@@ -104,7 +124,7 @@ export class DataProcessor {
         maxSpeed: 0,
         tackCount: 0,
         gybeCount: 0,
-        averageTwa: 0
+        averageTwa: 0,
       };
     }
 
@@ -117,13 +137,15 @@ export class DataProcessor {
     const totalTime = (endTime - startTime) / (1000 * 60); // minutes
 
     // Calculate speed statistics
-    const speeds = trackPoints.map(p => p.sog);
-    const averageSpeed = speeds.reduce((sum, speed) => sum + speed, 0) / speeds.length;
+    const speeds = trackPoints.map((p) => p.sog);
+    const averageSpeed =
+      speeds.reduce((sum, speed) => sum + speed, 0) / speeds.length;
     const maxSpeed = Math.max(...speeds);
 
     // Calculate average TWA
-    const twaValues = trackPoints.map(p => Math.abs(p.twa));
-    const averageTwa = twaValues.reduce((sum, twa) => sum + twa, 0) / twaValues.length;
+    const twaValues = trackPoints.map((p) => Math.abs(p.twa));
+    const averageTwa =
+      twaValues.reduce((sum, twa) => sum + twa, 0) / twaValues.length;
 
     // Calculate manoeuvre counts
     const manoeuvreAnalysis = ManoeuvreDetection.analyzeManoeuvres(manoeuvres);
@@ -135,14 +157,16 @@ export class DataProcessor {
       maxSpeed: Math.round(maxSpeed * 10) / 10,
       tackCount: manoeuvreAnalysis.tackCount,
       gybeCount: manoeuvreAnalysis.gybeCount,
-      averageTwa: Math.round(averageTwa)
+      averageTwa: Math.round(averageTwa),
     };
   }
 
   /**
    * Calculate total distance using Haversine formula
    */
-  private static calculateTotalDistance(trackPoints: ProcessedTrackPoint[]): number {
+  private static calculateTotalDistance(
+    trackPoints: ProcessedTrackPoint[]
+  ): number {
     if (trackPoints.length < 2) return 0;
 
     let totalDistance = 0;
@@ -150,12 +174,14 @@ export class DataProcessor {
     for (let i = 1; i < trackPoints.length; i++) {
       const prev = trackPoints[i - 1];
       const curr = trackPoints[i];
-      
+
       const distance = this.haversineDistance(
-        prev.lat, prev.lon,
-        curr.lat, curr.lon
+        prev.lat,
+        prev.lon,
+        curr.lat,
+        curr.lon
       );
-      
+
       totalDistance += distance;
     }
 
@@ -167,20 +193,24 @@ export class DataProcessor {
    * Returns distance in nautical miles
    */
   private static haversineDistance(
-    lat1: number, lon1: number,
-    lat2: number, lon2: number
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number
   ): number {
     const R = 3440.065; // Earth's radius in nautical miles
     const dLat = this.toRadians(lat2 - lat1);
     const dLon = this.toRadians(lon2 - lon1);
-    
+
     const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(this.toRadians(lat1)) * Math.cos(this.toRadians(lat2)) *
-      Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    
+      Math.cos(this.toRadians(lat1)) *
+        Math.cos(this.toRadians(lat2)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    
+
     return R * c;
   }
 
@@ -195,9 +225,21 @@ export class DataProcessor {
    * Calculate sailing performance metrics
    */
   static calculatePerformanceMetrics(trackPoints: ProcessedTrackPoint[]): {
-    upwindPerformance: { averageSpeed: number; averageTwa: number; efficiency: number };
-    downwindPerformance: { averageSpeed: number; averageTwa: number; efficiency: number };
-    reachingPerformance: { averageSpeed: number; averageTwa: number; efficiency: number };
+    upwindPerformance: {
+      averageSpeed: number;
+      averageTwa: number;
+      efficiency: number;
+    };
+    downwindPerformance: {
+      averageSpeed: number;
+      averageTwa: number;
+      efficiency: number;
+    };
+    reachingPerformance: {
+      averageSpeed: number;
+      averageTwa: number;
+      efficiency: number;
+    };
     overallEfficiency: number;
   } {
     if (trackPoints.length === 0) {
@@ -206,25 +248,34 @@ export class DataProcessor {
         upwindPerformance: emptyPerf,
         downwindPerformance: emptyPerf,
         reachingPerformance: emptyPerf,
-        overallEfficiency: 0
+        overallEfficiency: 0,
       };
     }
 
-    const upwindPoints = trackPoints.filter(p => p.pos === PointOfSail.Upwind);
-    const downwindPoints = trackPoints.filter(p => p.pos === PointOfSail.Downwind);
-    const reachingPoints = trackPoints.filter(p => p.pos === PointOfSail.Reach);
+    const upwindPoints = trackPoints.filter(
+      (p) => p.pos === PointOfSail.Upwind
+    );
+    const downwindPoints = trackPoints.filter(
+      (p) => p.pos === PointOfSail.Downwind
+    );
+    const reachingPoints = trackPoints.filter(
+      (p) => p.pos === PointOfSail.Reach
+    );
 
     const calculatePointPerformance = (points: ProcessedTrackPoint[]) => {
-      if (points.length === 0) return { averageSpeed: 0, averageTwa: 0, efficiency: 0 };
-      
-      const avgSpeed = points.reduce((sum, p) => sum + p.sog, 0) / points.length;
-      const avgTwa = points.reduce((sum, p) => sum + Math.abs(p.twa), 0) / points.length;
-      const efficiency = avgSpeed / (points[0]?.tws || 10) * 100; // Speed/Wind Speed ratio
-      
+      if (points.length === 0)
+        return { averageSpeed: 0, averageTwa: 0, efficiency: 0 };
+
+      const avgSpeed =
+        points.reduce((sum, p) => sum + p.sog, 0) / points.length;
+      const avgTwa =
+        points.reduce((sum, p) => sum + Math.abs(p.twa), 0) / points.length;
+      const efficiency = (avgSpeed / (points[0]?.tws || 10)) * 100; // Speed/Wind Speed ratio
+
       return {
         averageSpeed: Math.round(avgSpeed * 10) / 10,
         averageTwa: Math.round(avgTwa),
-        efficiency: Math.round(efficiency * 10) / 10
+        efficiency: Math.round(efficiency * 10) / 10,
       };
     };
 
@@ -232,15 +283,18 @@ export class DataProcessor {
     const downwindPerformance = calculatePointPerformance(downwindPoints);
     const reachingPerformance = calculatePointPerformance(reachingPoints);
 
-    const overallSpeed = trackPoints.reduce((sum, p) => sum + p.sog, 0) / trackPoints.length;
-    const overallWindSpeed = trackPoints.reduce((sum, p) => sum + p.tws, 0) / trackPoints.length;
-    const overallEfficiency = Math.round((overallSpeed / overallWindSpeed) * 100 * 10) / 10;
+    const overallSpeed =
+      trackPoints.reduce((sum, p) => sum + p.sog, 0) / trackPoints.length;
+    const overallWindSpeed =
+      trackPoints.reduce((sum, p) => sum + p.tws, 0) / trackPoints.length;
+    const overallEfficiency =
+      Math.round((overallSpeed / overallWindSpeed) * 100 * 10) / 10;
 
     return {
       upwindPerformance,
       downwindPerformance,
       reachingPerformance,
-      overallEfficiency
+      overallEfficiency,
     };
   }
 }
@@ -255,7 +309,8 @@ export async function processTrackData(
     fileSize: 0,
     trackPointCount: trackPoints.length,
     startTime: trackPoints.length > 0 ? trackPoints[0].utc : 0,
-    endTime: trackPoints.length > 0 ? trackPoints[trackPoints.length - 1].utc : 0,
+    endTime:
+      trackPoints.length > 0 ? trackPoints[trackPoints.length - 1].utc : 0,
   };
 
   return DataProcessor.processTrackData(trackPoints, metadata);

@@ -18,7 +18,7 @@ interface WeatherData {
   source: string;
 }
 
-interface WeatherResponse {
+export interface WeatherResponse {
   success: boolean;
   data?: WeatherData;
   error?: string;

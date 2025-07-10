@@ -66,8 +66,7 @@ export async function POST(request: NextRequest) {
       parseResult.data.metadata,
       {
         windOptions: {
-          fixedTwd: 0, // Default wind direction
-          useWeatherAPI: false,
+          useWeatherAPI: true,
         },
       }
     );

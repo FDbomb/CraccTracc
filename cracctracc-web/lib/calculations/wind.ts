@@ -1,4 +1,11 @@
-import { TrackPoint, ProcessedTrackPoint, WindData, PointOfSail, Tack } from '../types/sailing';
+import {
+  TrackPoint,
+  ProcessedTrackPoint,
+  WindData,
+  PointOfSail,
+  Tack,
+} from '../types/sailing';
+import { WeatherResponse } from '@/app/api/weather/route';
 
 // Constants
 // const METERS_PER_SECOND_TO_KNOTS = 1.943844; // TODO: Use for future wind speed conversions
@@ -52,14 +59,17 @@ export class WindCalculations {
   /**
    * Add fixed wind direction to all track points
    */
-  private static addFixedWind(trackPoints: TrackPoint[], twd: number): ProcessedTrackPoint[] {
+  private static addFixedWind(
+    trackPoints: TrackPoint[],
+    twd: number
+  ): ProcessedTrackPoint[] {
     return trackPoints.map((point) => ({
       ...point,
       twd,
       tws: 10, // Default wind speed
       twa: this.calculateTWA(point.cog, twd),
       pos: this.calculatePointOfSail(this.calculateTWA(point.cog, twd)),
-      tack: this.calculateTack(this.calculateTWA(point.cog, twd))
+      tack: this.calculateTack(this.calculateTWA(point.cog, twd)),
     }));
   }
 
@@ -70,8 +80,12 @@ export class WindCalculations {
     trackPoints: TrackPoint[],
     date: string
   ): Promise<ProcessedTrackPoint[]> {
+    if (trackPoints.length === 0) return [];
+
     try {
-      const windData = await this.fetchWindData(date);
+      // Use the first track point's location for the weather query
+      const { lat, lon } = trackPoints[0];
+      const windData = await this.fetchWindData(date, lat, lon);
       return this.interpolateWindData(trackPoints, windData);
     } catch (error) {
       console.warn('Failed to fetch wind data, using fixed wind:', error);
@@ -81,22 +95,49 @@ export class WindCalculations {
 
   /**
    * Fetch wind data from weather API
-   * TODO: Implement actual weather API integration
    */
-  static async fetchWindData(date: string): Promise<WindData[]> {
-    // Placeholder implementation
-    // In real implementation, integrate with:
-    // - OpenWeatherMap API
-    // - NOAA API
-    // - Or similar weather service
-    
-    return [
-      {
-        timestamp: new Date(date).getTime(),
-        speed: 10,
-        direction: 180
+  static async fetchWindData(
+    date: string,
+    lat: number,
+    lon: number
+  ): Promise<WindData[]> {
+    try {
+      const baseUrl =
+        process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+      const response = await fetch(`${baseUrl}/api/weather`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          lat,
+          lon,
+          timestamp: new Date(date).getTime(),
+        }),
+      });
+      if (!response.ok) {
+        throw new Error(
+          `Weather API request failed with status ${response.status}`
+        );
       }
-    ];
+      const data: WeatherResponse = await response.json();
+      // Assuming the API returns a single data point for now
+      return [
+        {
+          timestamp: data.data?.timestamp || new Date(date).getTime(),
+          speed: data.data?.windSpeed || 10, // m/s
+          direction: data.data?.windDirection || 180, // degrees
+        },
+      ];
+    } catch (error) {
+      console.error('Error fetching wind data:', error);
+      // Fallback to default values if API fails
+      return [
+        {
+          timestamp: new Date(date).getTime(),
+          speed: 10,
+          direction: 180,
+        },
+      ];
+    }
   }
 
   /**
@@ -108,7 +149,10 @@ export class WindCalculations {
     windData: WindData[]
   ): ProcessedTrackPoint[] {
     return trackPoints.map((point) => {
-      const { speed, direction } = this.interpolateWindAtTime(point.utc, windData);
+      const { speed, direction } = this.interpolateWindAtTime(
+        point.utc,
+        windData
+      );
       const twa = this.calculateTWA(point.cog, direction);
 
       return {
@@ -117,7 +161,7 @@ export class WindCalculations {
         tws: speed,
         twa,
         pos: this.calculatePointOfSail(twa),
-        tack: this.calculateTack(twa)
+        tack: this.calculateTack(twa),
       };
     });
   }
@@ -125,14 +169,16 @@ export class WindCalculations {
   /**
    * Interpolate wind speed and direction at a specific timestamp
    */
-  private static interpolateWindAtTime(timestamp: number, windData: WindData[]): {
+  private static interpolateWindAtTime(
+    timestamp: number,
+    windData: WindData[]
+  ): {
     speed: number;
     direction: number;
   } {
     if (windData.length === 0) {
       return { speed: 10, direction: 0 };
     }
-
     if (windData.length === 1) {
       return { speed: windData[0].speed, direction: windData[0].direction };
     }
@@ -142,7 +188,10 @@ export class WindCalculations {
     let after = windData[windData.length - 1];
 
     for (let i = 0; i < windData.length - 1; i++) {
-      if (windData[i].timestamp <= timestamp && windData[i + 1].timestamp >= timestamp) {
+      if (
+        windData[i].timestamp <= timestamp &&
+        windData[i + 1].timestamp >= timestamp
+      ) {
         before = windData[i];
         after = windData[i + 1];
         break;
@@ -151,20 +200,32 @@ export class WindCalculations {
 
     // Linear interpolation for wind speed
     const timeDiff = after.timestamp - before.timestamp;
-    const timeRatio = timeDiff === 0 ? 0 : (timestamp - before.timestamp) / timeDiff;
+    const timeRatio =
+      timeDiff === 0 ? 0 : (timestamp - before.timestamp) / timeDiff;
     const speed = before.speed + (after.speed - before.speed) * timeRatio;
 
     // Angular interpolation for wind direction
-    const direction = this.interpolateAngle(before.direction, after.direction, timeRatio);
+    const direction = this.interpolateAngle(
+      before.direction,
+      after.direction,
+      timeRatio
+    );
 
-    return { speed: Math.round(speed * 10) / 10, direction: Math.round(direction) };
+    return {
+      speed: Math.round(speed * 10) / 10,
+      direction: Math.round(direction),
+    };
   }
 
   /**
    * Interpolate between two angles, handling wrap-around
    * Based on Python angular_interpolation function
    */
-  private static interpolateAngle(angle1: number, angle2: number, ratio: number): number {
+  private static interpolateAngle(
+    angle1: number,
+    angle2: number,
+    ratio: number
+  ): number {
     // Unwrap the angle difference to handle 0/360 boundary
     const diff = ((angle2 - angle1 + 540) % 360) - 180;
     return (angle1 + diff * ratio + 360) % 360;
@@ -176,7 +237,7 @@ export class WindCalculations {
    */
   private static calculatePointOfSail(twa: number): PointOfSail {
     const absTwa = Math.abs(twa);
-    
+
     if (absTwa <= 30) return PointOfSail.HeadToWind;
     if (absTwa <= 60) return PointOfSail.Upwind;
     if (absTwa <= 95) return PointOfSail.Reach;
